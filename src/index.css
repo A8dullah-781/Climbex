@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+@import "tailwindcss";
+
+body{
+    margin: 0;
+    padding: 0;
+    background-color: #171616;
+    overflow-x: hidden;
+}
+
+.txtgray{
+    color: #868585;
+}
+.txtdgray{
+    color: #605F5F;
+}
+.txtwhite{
+    color: #FCF9F8;
+}
+
+.bgwhite{
+    background-color: #FCF9F8;
+}
+
+.robo {
+  font-family: "Space Grotesk", sans-serif;
+}
+.fontone {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+
+.hover-underline {
+  position: relative;
+  cursor: pointer;
+}
+
+.hover-underline::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  width: 0%;
+  height: 1px;
+  background: var(--underline-color, #D2FF9A);
+  color: var(--underline-color, #D2FF9A);
+  transition: all 0.3s ease-out;
+  transform: translateX(-50%);
+}
+
+.hover-underline:hover::after {
+  width: 100%;
+  left: 0;
+  transform: translateX(0);
+}
+
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track (background) */
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+
+/* Thumb (scroll handle) */
+::-webkit-scrollbar-thumb {
+  background: #747574;
+  border-radius: 10px;
+}
+
+/* Hover effect */
+::-webkit-scrollbar-thumb:hover {
+  background: #b7ff6a4d;
+}
