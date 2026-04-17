@@ -49,6 +49,13 @@ body{
   transform: translateX(-50%);
 }
 
+.txtgreen {
+  color: #D2FF9A;
+}
+.txtblue {
+  color: #9592FF;
+}
+
 .hover-underline:hover::after {
   width: 100%;
   left: 0;
