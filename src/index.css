@@ -83,3 +83,12 @@ body{
 ::-webkit-scrollbar-thumb:hover {
   background: #b7ff6a4d;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px black inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+}
