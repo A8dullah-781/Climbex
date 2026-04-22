@@ -92,3 +92,12 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: white !important;
   caret-color: white;
 }
+
+@media (max-width: 700px) {
+  .seq-step { grid-template-columns: clamp(40px,10vw,60px) 1fr !important; }
+  .seq-tags { grid-column: 2 / 3; margin-top: 0.5rem; flex-wrap: wrap; }
+}
+@media (max-width: 420px) {
+  .seq-step { grid-template-columns: 44px 1fr !important; }
+  .seq-tags { grid-column: 1 / -1; }
+}

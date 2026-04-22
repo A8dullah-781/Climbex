@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 const faqs = [
   {
@@ -51,86 +51,253 @@ const faqs = [
   },
 ]
 
+/* ─── Magnetic Button ─────────────────────────────────────────────────────── */
+const MagneticButton = ({ children, className, onClick }) => {
+  const btnRef = useRef(null)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const [hovered, setHovered] = useState(false)
+  const rafRef = useRef(null)
+
+  const handleMouseMove = useCallback((e) => {
+    const rect = btnRef.current.getBoundingClientRect()
+    const cx = rect.left + rect.width / 2
+    const cy = rect.top + rect.height / 2
+    const dx = e.clientX - cx
+    const dy = e.clientY - cy
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    const radius = 120
+
+    if (dist < radius) {
+      const strength = (1 - dist / radius) * 0.5
+      const tx = dx * strength
+      const ty = dy * strength
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(() => setPos({ x: tx, y: ty }))
+    }
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setHovered(false)
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    setPos({ x: 0, y: 0 })
+  }, [])
+
+  useEffect(() => {
+    const el = btnRef.current
+    if (!el) return
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [handleMouseMove])
+
+  return (
+    <button
+      ref={btnRef}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      className={className}
+      style={{
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        transition: hovered
+          ? 'transform 0.15s cubic-bezier(0.23, 1, 0.32, 1)'
+          : 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+        willChange: 'transform',
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+/* ─── Intersection Observer Hook ─────────────────────────────────────────── */
+const useInView = (threshold = 0.15) => {
+  const ref = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setInView(true); obs.disconnect() } },
+      { threshold }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [threshold])
+
+  return [ref, inView]
+}
+
+/* ─── FAQ Item ────────────────────────────────────────────────────────────── */
+const FaqItem = ({ faq, index, isOpen, onToggle }) => {
+  const [ref, inView] = useInView(0.1)
+  const answerRef = useRef(null)
+  const [height, setHeight] = useState(0)
+
+  useEffect(() => {
+    if (answerRef.current) {
+      setHeight(isOpen ? answerRef.current.scrollHeight : 0)
+    }
+  }, [isOpen])
+
+  return (
+    <div
+      ref={ref}
+      onClick={onToggle}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'translateX(0px)' : 'translateX(-36px)',
+        transition: `opacity 0.55s ease ${index * 0.055}s, transform 0.55s cubic-bezier(0.23,1,0.32,1) ${index * 0.055}s`,
+      }}
+      className={`rounded-2xl overflow-hidden cursor-pointer border transition-colors duration-300 ${
+        isOpen
+          ? 'bg-[#1e1e1e] border-[#B8FF4F]/30'
+          : 'bg-[#181818] border-[#2a2a2a] hover:border-[#3a3a3a]'
+      }`}
+    >
+      {/* Question Row */}
+      <div className="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 gap-4">
+        <span className="txtwhite fontone font-black uppercase text-xs sm:text-sm tracking-wide leading-snug">
+          {faq.q}
+        </span>
+
+        {/* Animated icon */}
+        <div
+          className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center border"
+          style={{
+            background: isOpen ? '#B8FF4F' : 'transparent',
+            borderColor: isOpen ? '#B8FF4F' : '#3a3a3a',
+            transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+            transition: 'transform 0.35s cubic-bezier(0.23,1,0.32,1), background 0.25s ease, border-color 0.25s ease',
+          }}
+        >
+          <span
+            className={`text-md font-light ${isOpen ? 'text-[#0f0f0f]' : 'text-white'}`}
+            style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '-2px', transition: 'color 0.25s ease' }}
+          >
+            +
+          </span>
+        </div>
+      </div>
+
+      {/* Smooth height-animated answer */}
+      <div
+        style={{
+          height: `${height}px`,
+          overflow: 'hidden',
+          transition: 'height 0.45s cubic-bezier(0.23,1,0.32,1)',
+        }}
+      >
+        <div ref={answerRef} className="px-5 sm:px-7 pb-5 sm:pb-6">
+          <div
+            className="w-full h-[1px] bg-[#2a2a2a] mb-4"
+            style={{
+              opacity: isOpen ? 1 : 0,
+              transform: isOpen ? 'scaleX(1)' : 'scaleX(0.6)',
+              transformOrigin: 'left',
+              transition: 'opacity 0.3s ease 0.1s, transform 0.4s ease 0.1s',
+            }}
+          />
+          <p
+            className="txtgray robo text-sm leading-relaxed"
+            style={{
+              opacity: isOpen ? 1 : 0,
+              transform: isOpen ? 'translateY(0)' : 'translateY(6px)',
+              transition: 'opacity 0.35s ease 0.15s, transform 0.4s ease 0.15s',
+            }}
+          >
+            {faq.a}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Main Component ──────────────────────────────────────────────────────── */
 const Faqs = () => {
   const [open, setOpen] = useState(null)
+  const [headerRef, headerInView] = useInView(0.2)
+  const [ctaRef, ctaInView] = useInView(0.2)
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
   return (
     <div className="w-full py-16 md:py-24 flex flex-col items-center">
 
-      {/* Header */}
-      <div className="text-center mb-10 md:mb-14 w-[80%]">
-        <p className="txtgreen robo tracking-[0.3em] uppercase text-[10px] sm:text-xs mb-3">
+      {/* ── Header ── */}
+      <div
+        ref={headerRef}
+        className="text-center mb-10 md:mb-14 w-[92%] sm:w-[88%] lg:w-[82%]"
+      >
+        <p
+          className="txtgreen robo tracking-[0.3em] uppercase text-[10px] sm:text-xs mb-3"
+          style={{
+            opacity: headerInView ? 1 : 0,
+            transform: headerInView ? 'translateX(0)' : 'translateX(-40px)',
+            transition: 'opacity 0.6s ease 0.1s, transform 0.6s cubic-bezier(0.23,1,0.32,1) 0.1s',
+          }}
+        >
           Knowledge Base
         </p>
-        <h2 className="txtwhite fontone font-black uppercase text-4xl sm:text-5xl md:text-[4.5vw] leading-none">
+        <h2
+          className="txtwhite fontone font-black uppercase text-4xl sm:text-5xl md:text-[4.5vw] leading-none"
+          style={{
+            opacity: headerInView ? 1 : 0,
+            transform: headerInView ? 'translateX(0)' : 'translateX(-50px)',
+            transition: 'opacity 0.7s ease 0.2s, transform 0.7s cubic-bezier(0.23,1,0.32,1) 0.2s',
+          }}
+        >
           Inquiry Archive
         </h2>
-        <p className="txtgray robo text-sm mt-4 max-w-md mx-auto leading-relaxed">
+        <p
+          className="txtgray robo text-sm mt-4 max-w-md mx-auto leading-relaxed"
+          style={{
+            opacity: headerInView ? 1 : 0,
+            transform: headerInView ? 'translateX(0)' : 'translateX(-40px)',
+            transition: 'opacity 0.6s ease 0.35s, transform 0.6s cubic-bezier(0.23,1,0.32,1) 0.35s',
+          }}
+        >
           Everything you need to know before we build something great together.
         </p>
       </div>
 
-      {/* FAQ List */}
-      <div className="flex flex-col gap-3 w-[80%]">
+      {/* ── FAQ List ── */}
+      <div className="flex flex-col gap-3 w-[92%] sm:w-[88%] lg:w-[82%]">
         {faqs.map((faq, i) => (
-          <div
+          <FaqItem
             key={i}
-            onClick={() => toggle(i)}
-            className={`rounded-2xl overflow-hidden cursor-pointer border transition-all duration-300 ${
-              open === i
-                ? 'bg-[#1e1e1e] border-[#B8FF4F]/30'
-                : 'bg-[#181818] border-[#2a2a2a] hover:border-[#3a3a3a]'
-            }`}
-          >
-            {/* Question Row */}
-            <div className="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 gap-4">
-              <span className="txtwhite fontone font-black uppercase text-xs sm:text-sm tracking-wide leading-snug">
-                {faq.q}
-              </span>
-
-              {/* Icon — perfectly centered with flex */}
-              <div
-                className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center border transition-all duration-300 ${
-                  open === i
-                    ? 'bg-[#B8FF4F] border-[#B8FF4F] rotate-45'
-                    : 'border-[#3a3a3a] rotate-0'
-                }`}
-              >
-                <span
-                  className={`text-md -mt-1 font-light leading-none ${
-                    open === i ? 'text-[#0f0f0f]' : 'text-white'
-                  }`}
-                  style={{ lineHeight: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                >
-                  +
-                </span>
-              </div>
-            </div>
-
-            {/* Answer */}
-            <div
-              className={`transition-all duration-500 ease-in-out ${
-                open === i ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
-              }`}
-            >
-              <div className="px-5 sm:px-7 pb-5 sm:pb-6">
-                <div className="w-full h-[1px] bg-[#2a2a2a] mb-4" />
-                <p className="txtgray robo text-md leading-relaxed">
-                  {faq.a}
-                </p>
-              </div>
-            </div>
-
-          </div>
+            faq={faq}
+            index={i}
+            isOpen={open === i}
+            onToggle={() => toggle(i)}
+          />
         ))}
       </div>
 
-      {/* CTA Block */}
-      <div className="mt-14 md:mt-20 w-[80%] bg-[#B8FF4F] rounded-3xl px-6 sm:px-10 py-10 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-8 text-center sm:text-left">
-        <div>
-          <p className="text-black robo uppercase tracking-[0.2em] text-[16px] mb-2">
+      {/* ── CTA Block ── */}
+      <div
+        ref={ctaRef}
+        className="mt-14 md:mt-20 w-[92%] sm:w-[88%] lg:w-[82%] bg-[#B8FF4F] rounded-3xl px-6 sm:px-10 py-10 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-8"
+        style={{
+          opacity: ctaInView ? 1 : 0,
+          transform: ctaInView ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.97)',
+          transition: 'opacity 0.75s cubic-bezier(0.23,1,0.32,1), transform 0.75s cubic-bezier(0.23,1,0.32,1)',
+        }}
+      >
+        {/* Text — left-aligned always */}
+        <div
+          className="text-left"
+          style={{
+            opacity: ctaInView ? 1 : 0,
+            transform: ctaInView ? 'translateX(0)' : 'translateX(-30px)',
+            transition: 'opacity 0.7s ease 0.2s, transform 0.7s cubic-bezier(0.23,1,0.32,1) 0.2s',
+          }}
+        >
+          <p className="text-black robo uppercase tracking-[0.2em] text-[14px] sm:text-[16px] mb-2">
             Still have questions?
           </p>
           <h3 className="text-[#0f0f0f] fontone font-black uppercase text-2xl sm:text-3xl leading-tight">
@@ -140,9 +307,20 @@ const Faqs = () => {
             No pitch. No pressure. Just a real conversation about your project.
           </p>
         </div>
-        <button className="flex-shrink-0 bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] transition-colors duration-300 whitespace-nowrap w-full sm:w-auto">
-          Book a Free Call 
-        </button>
+
+        {/* Magnetic Button — pinned to the right */}
+        <div
+          className="flex-shrink-0 w-full sm:w-auto flex sm:justify-end"
+          style={{
+            opacity: ctaInView ? 1 : 0,
+            transform: ctaInView ? 'translateX(0)' : 'translateX(30px)',
+            transition: 'opacity 0.7s ease 0.35s, transform 0.7s cubic-bezier(0.23,1,0.32,1) 0.35s',
+          }}
+        >
+          <MagneticButton className="bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] w-full sm:w-auto whitespace-nowrap">
+            Book a Free Call
+          </MagneticButton>
+        </div>
       </div>
 
     </div>
