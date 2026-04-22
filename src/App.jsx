@@ -188,8 +188,7 @@ const Loader = ({ onComplete }) => {
               style={{
                 display: 'inline-block',
                 fontSize: 'clamp(2.4rem, 7vw, 6.5rem)',
-                fontWeight: 100,
-                letterSpacing: '0.06em',
+                fontWeight: 500,
                 color: '#fff',
                 fontFamily: 'inherit',
                 lineHeight: 1,
@@ -229,7 +228,7 @@ const Loader = ({ onComplete }) => {
         position: 'absolute', bottom: '2rem', right: '2.2rem',
         fontFamily: 'monospace', fontWeight: 100,
         fontSize: 'clamp(3.5rem, 8vw, 7rem)',
-        color: 'rgba(255,255,255,0.055)',
+        color: '#605F5F',
         lineHeight: 1, letterSpacing: '-0.04em',
         userSelect: 'none', opacity: 0, zIndex: 3,
       }}>
