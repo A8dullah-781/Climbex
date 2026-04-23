@@ -287,8 +287,9 @@ const App = () => {
         <Navbar />
         <Home    registerStart={fn => { startHomeAnim.current = fn }} />
         <About />
+         <Service />
         <Sequence />
-        <Service />
+       
         <Work/>
         <Pricing />
         <Testimonail />
