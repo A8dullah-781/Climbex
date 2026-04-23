@@ -9,10 +9,7 @@ const faqs = [
     q: "DO YOU OFFER POST-LAUNCH MAINTENANCE?",
     a: "Yes. We offer ongoing retainer packages for clients who need continuous updates, performance monitoring, and feature additions. Think of us as your long-term engineering partner, not just a one-time vendor."
   },
-  {
-    q: "WHAT TECHNOLOGIES DO YOU USE?",
-    a: "We build primarily with React, Next.js, Tailwind CSS, and Node.js. For backends we use Supabase, Firebase, or custom REST APIs. Every stack decision is made based on what will perform best for your specific project."
-  },
+  
   {
     q: "HOW DO I GET STARTED?",
     a: "Book a free discovery call. We'll understand your goals, walk you through the process, and propose the right engagement. No sales pressure — just clarity on whether we're the right fit for each other."
@@ -45,10 +42,7 @@ const faqs = [
     q: "WHAT MAKES DEVHOLIX DIFFERENT FROM OTHER AGENCIES?",
     a: "We don't use templates, generic layouts, or recycled code. Every project is engineered from scratch with a focus on speed, design quality, and conversion. We treat your business like it's our own."
   },
-  {
-    q: "HOW DO PAYMENTS WORK?",
-    a: "We typically split projects into two milestones: 50% upfront to begin, 50% on delivery. For larger Elite Builds, we can arrange a three-stage payment schedule. Everything is transparent — no hidden fees."
-  },
+ 
 ]
 
 /* ─── Magnetic Button ─────────────────────────────────────────────────────── */
@@ -202,7 +196,7 @@ const FaqItem = ({ faq, index, isOpen, onToggle }) => {
             }}
           />
           <p
-            className="txtgray robo text-sm leading-relaxed"
+            className="txtgray robo text-md leading-relaxed"
             style={{
               opacity: isOpen ? 1 : 0,
               transform: isOpen ? 'translateY(0)' : 'translateY(6px)',

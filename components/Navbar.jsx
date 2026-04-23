@@ -89,8 +89,8 @@ const Navbar = () => {
       </div>
 
       {/* Desktop CTA */}
-      <div className='hidden md:block robo txtdgray text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'>
-        <span className='relative z-10 transition-colors duration-300 group-hover:text-black'>START PROJECT</span>
+      <div className='hidden md:block robo text-black text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'>
+        <span className='relative z-10 transition-colors duration-300 mt-0.5 group-hover:text-black'>START PROJECT</span>
         <span className='absolute inset-0 bg-[#D2FF9A] -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0 rounded-3xl' />
       </div>
 
@@ -125,7 +125,7 @@ const Navbar = () => {
           ))}
           <button
             ref={mobileCTARef}
-            className='robo uppercase tracking-widest text-[2.5vw] rounded-3xl px-6 py-3 mt-4 w-full bgwhite txtdgray relative overflow-hidden group cursor-pointer'
+            className='robo uppercase tracking-widest text-[2.5vw] rounded-3xl px-6 py-3 mt-4 w-full bgwhite text-black relative overflow-hidden group cursor-pointer'
           >
             <span className='relative z-10 transition-colors duration-300 group-hover:text-black'>START PROJECT</span>
             <span className='absolute inset-0 bg-[#D2FF9A] -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0 rounded-3xl' />
