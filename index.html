@@ -2,9 +2,106 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/devholixLogo.PNG" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Devholix</title>
+
+    <!-- ── Favicon ── -->
+    <link rel="icon" type="image/png" href="/devholixLogo.PNG" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/devholixLogo.PNG" />
+    <meta name="theme-color" content="#111110" />
+
+    <!-- ── Primary SEO ── -->
+    <title>Devholix — Elite Web Design & Development Agency</title>
+    <meta name="description" content="Devholix engineers premium digital experiences at the intersection of mathematical precision and artistic rebellion. Elite UI/UX design, performance-first development, and strategic deployment for bold brands." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://devholix.com/" />
+
+    <!-- ── Open Graph ── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://devholix.com/" />
+    <meta property="og:title" content="Devholix — Elite Web Design & Development Agency" />
+    <meta property="og:description" content="We curate digital experiences at the intersection of mathematical precision and artistic rebellion. Elite engineering for the bold." />
+    <meta property="og:image" content="https://devholix.com/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Devholix — Elite Web Design Agency" />
+    <meta property="og:site_name" content="Devholix" />
+
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Devholix — Elite Web Design & Development Agency" />
+    <meta name="twitter:description" content="We curate digital experiences at the intersection of mathematical precision and artistic rebellion. Elite engineering for the bold." />
+    <meta name="twitter:image" content="https://devholix.com/og-image.jpg" />
+
+    <!--
+      ── FONTS (CRITICAL — do NOT use @import in CSS) ──
+      1. preconnect opens the socket to Google early, saving ~200ms RTT
+      2. Both fonts combined in ONE <link> = one request instead of two
+      3. display=swap prevents render-blocking — text shows in fallback font
+         while the custom font loads, then swaps in seamlessly
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Grotesk:wght@300..700&display=swap"
+    />
+
+    <!-- ── JSON-LD: Organization ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Devholix",
+      "url": "https://devholix.com",
+      "description": "Elite web design and development agency engineering premium digital experiences for bold brands.",
+      "founder": { "@type": "Person", "name": "Abdullah" },
+      "foundingDate": "2026",
+      "serviceType": ["Web Design", "Web Development", "UI/UX Design", "Performance Optimization"],
+      "areaServed": "Worldwide",
+      "priceRange": "$999+",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "abdullah@devholix.com",
+        "telephone": "+923104993978",
+        "contactType": "customer service"
+      }
+    }
+    </script>
+
+    <!-- ── JSON-LD: FAQPage (Google rich snippets) ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the average build time?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Most projects are delivered within 2–4 weeks. Launch Pad ships in 10–14 days. Elite Builds may take 3–6 weeks." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer post-launch maintenance?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. We offer ongoing retainer packages for updates, performance monitoring, and feature additions." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I get started?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Book a free discovery call. We'll understand your goals and propose the right engagement." }
+        },
+        {
+          "@type": "Question",
+          "name": "Will my website be mobile responsive?",
+          "acceptedAnswer": { "@type": "Answer", "text": "100%. Every build is fully responsive across all devices and screen sizes." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do payments work?",
+          "acceptedAnswer": { "@type": "Answer", "text": "50% upfront to begin, 50% on delivery. Elite Builds can use a three-stage payment schedule." }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

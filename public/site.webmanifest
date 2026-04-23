@@ -1,0 +1,8 @@
+{
+  "name": "Devholix",
+  "short_name": "Devholix",
+  "icons": [{ "src": "/devholixLogo.PNG", "sizes": "180x180", "type": "image/png" }],
+  "theme_color": "#111110",
+  "background_color": "#111110",
+  "display": "standalone"
+}

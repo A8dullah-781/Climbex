@@ -1,41 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+/* ── FONTS ARE NOW LOADED IN index.html — DO NOT ADD @import FOR FONTS HERE ── */
 @import "tailwindcss";
 
-body{
-    margin: 0;
-    padding: 0;
-    background-color: #171616;
-    overflow-x: hidden;
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #171616;
+  overflow-x: hidden;
 }
 
-.txtgray{
-    color: #868585;
-}
-.txtdgray{
-    color: #605F5F;
-}
-.txtwhite{
-    color: #FCF9F8;
-}
+.txtgray  { color: #868585; }
+.txtdgray { color: #605F5F; }
+.txtwhite { color: #FCF9F8; }
+.bgwhite  { background-color: #FCF9F8; }
 
-.bgwhite{
-    background-color: #FCF9F8;
-}
-
-.robo {
-  font-family: "Space Grotesk", sans-serif;
-}
-.fontone {
-  font-family: "Plus Jakarta Sans", sans-serif;
-}
-
+.robo    { font-family: "Space Grotesk", sans-serif; }
+.fontone { font-family: "Plus Jakarta Sans", sans-serif; }
 
 .hover-underline {
   position: relative;
   cursor: pointer;
 }
-
 .hover-underline::after {
   content: "";
   position: absolute;
@@ -49,12 +33,8 @@ body{
   transform: translateX(-50%);
 }
 
-.txtgreen {
-  color: #D2FF9A;
-}
-.txtblue {
-  color: #9592FF;
-}
+.txtgreen { color: #D2FF9A; }
+.txtblue  { color: #9592FF; }
 
 .hover-underline:hover::after {
   width: 100%;
@@ -62,28 +42,13 @@ body{
   transform: translateX(0);
 }
 
+/* Scrollbar */
+::-webkit-scrollbar          { width: 8px; }
+::-webkit-scrollbar-track    { background: #0f0f0f; }
+::-webkit-scrollbar-thumb    { background: #747574; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #b7ff6a4d; }
 
-/* Scrollbar width */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-/* Track (background) */
-::-webkit-scrollbar-track {
-  background: #0f0f0f;
-}
-
-/* Thumb (scroll handle) */
-::-webkit-scrollbar-thumb {
-  background: #747574;
-  border-radius: 10px;
-}
-
-/* Hover effect */
-::-webkit-scrollbar-thumb:hover {
-  background: #b7ff6a4d;
-}
-
+/* Autofill override */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
