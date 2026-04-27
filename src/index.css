@@ -12,6 +12,8 @@ body {
 .txtdgray { color: #605F5F; }
 .txtwhite { color: #FCF9F8; }
 .bgwhite  { background-color: #FCF9F8; }
+.txtgreen { color: #D2FF9A; }
+.txtblue  { color: #9592FF; }
 
 .robo    { font-family: "Space Grotesk", sans-serif; }
 .fontone { font-family: "Plus Jakarta Sans", sans-serif; }
@@ -33,8 +35,6 @@ body {
   transform: translateX(-50%);
 }
 
-.txtgreen { color: #D2FF9A; }
-.txtblue  { color: #9592FF; }
 
 .hover-underline:hover::after {
   width: 100%;

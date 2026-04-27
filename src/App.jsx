@@ -13,6 +13,7 @@ import Faqs        from '../components/Faqs'
 import Contact     from '../components/Contact'
 import Footer      from '../components/Footer'
 import Work from '../components/Work'
+import Archive from '../components/Archive'
 
 gsap.registerPlugin(CustomEase)
 CustomEase.create('tile.drop',  '0.55, 0, 1, 0.45')
@@ -292,6 +293,7 @@ const App = () => {
        
         <Work/>
         <Pricing />
+        <Archive/>
         <Testimonail />
         <Faqs />
         <Contact />

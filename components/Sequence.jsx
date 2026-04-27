@@ -112,10 +112,9 @@ export default function Sequence() {
   };
 
   return (
-    <section
+    <section className="mt-12 md:h-screen h-full md:mt-0"
       style={{
         
-        minHeight: "100vh",
         padding: "clamp(32px, 6vw, 80px) clamp(20px, 7.5vw, 100px)",
         fontFamily: "'Roboto Mono', monospace",
         boxSizing: "border-box",
