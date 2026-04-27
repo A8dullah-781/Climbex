@@ -12,6 +12,7 @@ const PROJECTS = [
     buildId: '#LN-0114-AR',
     img: '/images/linea.PNG',
     index: '02 / 03',
+    url: 'https://linea-architects.vercel.app/',
   },
   {
     id: 1,
@@ -20,6 +21,7 @@ const PROJECTS = [
     buildId: '#V-004-B2',
     img: '/images/void.PNG',
     index: '01 / 03',
+    url: 'https://studio-void.vercel.app/',
   },
   {
     id: 3,
@@ -28,6 +30,7 @@ const PROJECTS = [
     buildId: '#CH-0226-CO',
     img: '/images/cafe.PNG',
     index: '03 / 03',
+    url: 'https://a8dullah-chapter-one.vercel.app/',
   },
 ]
 
@@ -74,7 +77,8 @@ const Card = React.memo(({ project }) => {
       ref={cardRef}
       onMouseEnter={enter}
       onMouseLeave={leave}
-      className='relative w-[60vw] flex-none rounded-2xl overflow-hidden cursor-none will-change-transform'
+      onClick={() => window.open(project.url, '_blank')}
+      className='relative w-[60vw] flex-none rounded-2xl overflow-hidden cursor-pointer will-change-transform'
       style={{
         height: 'clamp(290px, 52vh, 600px)',
         border: '1px solid rgba(255,255,255,0.07)',
@@ -131,6 +135,7 @@ Card.displayName = 'Card'
 const MobileCard = ({ project }) => (
   <div
     className='relative w-full rounded-2xl overflow-hidden'
+    onClick={() => window.open(project.url, '_blank')}
     style={{
       height: '45vh',
       border: '1px solid rgba(255,255,255,0.07)',
@@ -240,10 +245,16 @@ const Archive = () => {
       velX.current        = e.clientX - prevClientX.current
       prevClientX.current = e.clientX
     }
-    const onUp = () => {
+    const onUp = (e) => {
       if (!dragging.current) return
       dragging.current   = false
       outer.style.cursor = 'grab'
+      const movedX = Math.abs(e.clientX - dragStartClientX.current)
+      if (movedX < 5) {
+        outer.releasePointerCapture(e.pointerId)
+        targetX.current = posX.current
+        return
+      }
       targetX.current    = clamp(posX.current + velX.current * 8, getMinX(), 0)
       startLoop()
     }
@@ -317,7 +328,6 @@ const Archive = () => {
             The archive
           </h1>
         </header>
-
 
         <div className='relative z-20 py-12'>
           <Swiper

@@ -112,7 +112,7 @@ export default function Sequence() {
   };
 
   return (
-    <section className="mt-12 md:h-screen h-full md:mt-0"
+    <section className="mt-12  h-full md:mt-0"
       style={{
         
         padding: "clamp(32px, 6vw, 80px) clamp(20px, 7.5vw, 100px)",
