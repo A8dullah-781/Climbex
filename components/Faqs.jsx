@@ -2,46 +2,59 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 const faqs = [
   {
-    q: "WHAT IS THE AVERAGE BUILD TIME?",
-    a: "Most projects are delivered within 2–4 weeks depending on scope. Launch Pad projects typically ship in 10–14 days. Elite Builds with custom functionality may take 3–6 weeks. You'll always get a clear timeline before we start."
+    q: "What's the average build time?",
+    a: "Most projects ship in 2–4 weeks depending on scope. Launch Pad projects typically deliver in 10–14 days. Elite Builds with custom functionality may take 3–6 weeks. You'll always get a clear timeline before we start — no guessing."
   },
   {
-    q: "DO YOU OFFER POST-LAUNCH MAINTENANCE?",
-    a: "Yes. We offer ongoing retainer packages for clients who need continuous updates, performance monitoring, and feature additions. Think of us as your long-term engineering partner, not just a one-time vendor."
+    q: "How do I get started?",
+    a: "Book a free discovery call. We'll understand your goals, walk you through the process, and recommend the right engagement. No sales pressure — just an honest conversation about whether we're the right fit."
   },
   {
-    q: "HOW DO I GET STARTED?",
-    a: "Book a free discovery call. We'll understand your goals, walk you through the process, and propose the right engagement. No sales pressure — just clarity on whether we're the right fit for each other."
+    q: "What makes Devholix different from other agencies?",
+    a: "We don't use templates, generic layouts, or recycled code. Every project is engineered from scratch with a focus on speed, design quality, and conversion. We treat your business like it's our own — and the work reflects that."
   },
   {
-    q: "DO YOU WORK WITH STARTUPS OR ONLY ESTABLISHED BUSINESSES?",
+    q: "Do you work with startups or only established businesses?",
     a: "Both. Our Launch Pad plan is built for founders and early-stage startups who need to move fast. Our Elite Build is for established businesses that need a premium digital presence. We meet you where you are."
   },
   {
-    q: "WILL MY WEBSITE BE MOBILE RESPONSIVE?",
-    a: "100%. Every single thing we build is fully responsive across all devices and screen sizes. We test on mobile, tablet, and desktop before any delivery — it's non-negotiable for us."
-  },
-  {
-    q: "CAN I SEE EXAMPLES OF YOUR PREVIOUS WORK?",
-    a: "Absolutely. We have a curated portfolio of live projects across industries. Book a call and we'll walk you through case studies relevant to your niche so you can see exactly what to expect."
-  },
-  {
-    q: "WHAT IF I ALREADY HAVE A WEBSITE AND JUST NEED A REDESIGN?",
+    q: "I already have a website — can you just redesign it?",
     a: "That's one of our most common engagements. We audit your existing site, identify what's costing you conversions, and rebuild it with precision. Old brand, new performance."
   },
   {
-    q: "DO YOU HANDLE SEO AND PERFORMANCE OPTIMIZATION?",
-    a: "Yes. Every project ships with clean semantic HTML, optimized assets, fast load times, and proper meta structure. For deeper SEO strategy and content, we offer that as an add-on service."
+    q: "Will my website be mobile responsive?",
+    a: "100%. Everything we build is fully responsive across all devices and screen sizes. We test on mobile, tablet, and desktop before any delivery — it's non-negotiable."
   },
   {
-    q: "HOW MUCH INPUT DO I HAVE DURING THE PROCESS?",
-    a: "A lot. We run collaborative checkpoints at design, development, and pre-launch stages. You're never in the dark — you'll always know exactly where we are and have the chance to give feedback."
+    q: "Do you handle SEO and performance optimization?",
+    a: "Yes. Every project ships with clean semantic HTML, optimized assets, fast load times, and proper meta structure. For deeper SEO strategy and content, we offer that as an add-on."
   },
   {
-    q: "WHAT MAKES DEVHOLIX DIFFERENT FROM OTHER AGENCIES?",
-    a: "We don't use templates, generic layouts, or recycled code. Every project is engineered from scratch with a focus on speed, design quality, and conversion. We treat your business like it's our own."
+    q: "Can I see examples of your previous work?",
+    a: "Absolutely. We have a curated portfolio of live projects across industries. Book a call and we'll walk you through case studies relevant to your niche so you can see exactly what to expect."
+  },
+  {
+    q: "Do you offer post-launch maintenance?",
+    a: "Yes. We offer ongoing retainer packages for clients who need continuous updates, performance monitoring, and feature additions. Think of us as your long-term engineering partner, not a one-time vendor."
+  },
+  {
+    q: "How much input do I have during the process?",
+    a: "A lot. We run collaborative checkpoints at design, development, and pre-launch stages. You'll always know exactly where we are and have the chance to give feedback — you're never in the dark."
   },
 ]
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    "name": q,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": a
+    }
+  }))
+}
 
 const MagneticButton = ({ children, className, onClick }) => {
   const btnRef = useRef(null)
@@ -206,6 +219,17 @@ const Faqs = () => {
   const [open, setOpen] = useState(null)
   const [headerRef, headerInView] = useInView(0.2)
   const [ctaRef, ctaInView] = useInView(0.2)
+
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.id = 'faq-schema'
+    script.text = JSON.stringify(faqSchema)
+    const existing = document.getElementById('faq-schema')
+    if (existing) existing.remove()
+    document.head.appendChild(script)
+    return () => document.getElementById('faq-schema')?.remove()
+  }, [])
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
