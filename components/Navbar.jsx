@@ -76,7 +76,7 @@ const Navbar = () => {
   return (
     <div
       ref={navRef}
-      className='fixed top-0 left-0 w-screen z-50 h-[10vh] px-[2vw] flex flex-row justify-between items-center'
+      className='fixed bg-[#171616] top-0 left-0 w-screen z-50 h-[10vh] px-[2vw] flex flex-row justify-between items-center'
     >
       {/* Brand */}
       <div className='fontone font-bold text-white text-[5vw] pr-4 lg:pr-0 lg:text-[1.3vw] cursor-default select-none'>

@@ -6,7 +6,9 @@ body {
   padding: 0;
   background-color: #171616;
   overflow-x: hidden;
+  
 }
+
 
 .txtgray  { color: #868585; }
 .txtdgray { color: #605F5F; }

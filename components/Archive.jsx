@@ -46,8 +46,25 @@ const useIsMobile = () => {
   return isMobile
 }
 
+/* ─── animateIn helpers ────────────────────────────────────────────────── */
+const hide = (el) => {
+  if (!el) return
+  el.style.opacity = '0'
+  el.style.transform = 'translateY(28px)'
+  el.style.transition = 'none'
+}
+
+const show = (el, delay = 0) => {
+  if (!el) return
+  setTimeout(() => {
+    el.style.transition = `opacity .85s ease, transform .85s cubic-bezier(.16,1,.3,1)`
+    el.style.opacity = '1'
+    el.style.transform = 'none'
+  }, delay)
+}
+
 /* ─── Card (desktop) ───────────────────────────────────────────────────── */
-const Card = React.memo(({ project, didDrag }) => {
+const Card = React.memo(({ project }) => {
   const cardRef = useRef(null)
   const imgRef  = useRef(null)
   const ctaRef  = useRef(null)
@@ -73,8 +90,10 @@ const Card = React.memo(({ project, didDrag }) => {
   }, [])
 
   return (
+    // data-url is read by the outer onUp handler to navigate on tap (no drag)
     <article
       ref={cardRef}
+      data-url={project.url}
       onMouseEnter={enter}
       onMouseLeave={leave}
       className='relative w-[60vw] flex-none rounded-2xl overflow-hidden will-change-transform'
@@ -107,20 +126,20 @@ const Card = React.memo(({ project, didDrag }) => {
         {project.index}
       </span>
 
-      {/* ↓ Changed: div → button, removed pointer-events-none, added onClick */}
-      <button
+      {/* CTA badge — purely visual, navigation is handled by outer onUp */}
+      <div
         ref={ctaRef}
-        onClick={(e) => { e.stopPropagation(); window.open(project.url, '_blank') }}
-        className='absolute top-[18px] right-5 flex items-center gap-2 bg-transparent border-none p-0 cursor-pointer'
+        className='absolute top-[18px] right-5 flex items-center gap-2'
         style={{
           opacity: 0,
           transform: 'translateX(10px)',
           transition: 'opacity .35s ease, transform .4s cubic-bezier(.34,1.56,.64,1)',
+          pointerEvents: 'none',
         }}
       >
         <span className='w-[6px] h-[6px] rounded-full bg-[#B8FF4F] shadow-[0_0_8px_#B8FF4F]' />
         <span className='robo text-[15px] uppercase font-bold text-[#B8FF4F]'>View</span>
-      </button>
+      </div>
 
       <div className='absolute bottom-0 left-0 right-0 z-10 px-6 pb-6'>
         <p className='robo text-[10px] uppercase text-[#DCDCDC] mb-[6px]'>{project.sub}</p>
@@ -134,15 +153,12 @@ const Card = React.memo(({ project, didDrag }) => {
 })
 Card.displayName = 'Card'
 
-/* ─── MobileCard (inside Swiper slide) ────────────────────────────────── */
+/* ─── MobileCard ───────────────────────────────────────────────────────── */
 const MobileCard = ({ project }) => (
   <div
     className='relative w-full rounded-2xl overflow-hidden'
     onClick={() => window.open(project.url, '_blank')}
-    style={{
-      height: '45vh',
-      border: '1px solid rgba(255,255,255,0.07)',
-    }}
+    style={{ height: '45vh', border: '1px solid rgba(255,255,255,0.07)' }}
   >
     <img
       src={project.img}
@@ -172,24 +188,72 @@ const MobileCard = ({ project }) => (
 const Archive = () => {
   const isMobile = useIsMobile()
 
+  /* animation target refs */
+  const sectionRef  = useRef(null)
+  const headerRef   = useRef(null)
+  const cardsRef    = useRef(null)
+  const footerRef   = useRef(null)
+
   /* desktop drag refs */
-  const outerRef    = useRef(null)
-  const trackRef    = useRef(null)
-  const progressRef = useRef(null)
-  const posX        = useRef(0)
-  const targetX     = useRef(0)
-  const velX        = useRef(0)
-  const dragging    = useRef(false)
-  const didDrag     = useRef(false)   // ← NEW: true if pointer moved enough to be a drag
+  const outerRef         = useRef(null)
+  const trackRef         = useRef(null)
+  const progressRef      = useRef(null)
+  const posX             = useRef(0)
+  const targetX          = useRef(0)
+  const velX             = useRef(0)
+  const dragging         = useRef(false)
+  const didDrag          = useRef(false)
   const dragStartClientX = useRef(0)
   const dragStartPosX    = useRef(0)
   const prevClientX      = useRef(0)
   const rafId            = useRef(null)
   const isLooping        = useRef(false)
   const hintDone         = useRef(false)
+  const downTarget       = useRef(null)   // element under pointer at pointerdown
 
-  const clamp    = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
-  const getMinX  = useCallback(() => {
+  /* ── reveal on scroll-into-view ── */
+  useEffect(() => {
+    hide(headerRef.current)
+    hide(footerRef.current)
+
+    const cards = Array.from(trackRef.current?.querySelectorAll('article') ?? [])
+    cards.forEach((card) => {
+      card.style.opacity    = '0'
+      card.style.transform  = 'translateY(48px) scale(.96)'
+      card.style.transition = 'none'
+    })
+
+    if (cardsRef.current) hide(cardsRef.current)
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        observer.disconnect()
+
+        show(headerRef.current, 0)
+        show(footerRef.current, isMobile ? 280 : 320)
+
+        if (isMobile) {
+          show(cardsRef.current, 140)
+        } else {
+          cards.forEach((card, i) => {
+            setTimeout(() => {
+              card.style.transition = `opacity .9s ease, transform .95s cubic-bezier(.23,1,.32,1)`
+              card.style.opacity    = '1'
+              card.style.transform  = 'translateY(0) scale(1)'
+            }, 180 + i * 130)
+          })
+        }
+      },
+      { threshold: 0.05 }
+    )
+
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [isMobile])
+
+  const clamp   = (v, lo, hi) => Math.max(lo, Math.min(hi, v))
+  const getMinX = useCallback(() => {
     const track = trackRef.current; const outer = outerRef.current
     if (!track || !outer) return 0
     return -(track.scrollWidth - outer.clientWidth)
@@ -222,15 +286,16 @@ const Archive = () => {
     rafId.current = requestAnimationFrame(tick)
   }, [syncProgress])
 
-  /* desktop events */
+  /* ── desktop pointer + wheel ── */
   useEffect(() => {
     if (isMobile) return
     const outer = outerRef.current; if (!outer) return
 
     const onDown = (e) => {
+      downTarget.current       = e.target          // capture BEFORE setPointerCapture steals it
       outer.setPointerCapture(e.pointerId)
-      dragging.current = true
-      didDrag.current  = false          // ← reset on each press
+      dragging.current         = true
+      didDrag.current          = false
       dragStartClientX.current = e.clientX
       dragStartPosX.current    = posX.current
       prevClientX.current      = e.clientX
@@ -239,32 +304,42 @@ const Archive = () => {
       outer.style.cursor       = 'grabbing'
       startLoop()
     }
+
     const onMove = (e) => {
       if (!dragging.current) return
       const delta = e.clientX - dragStartClientX.current
-      if (Math.abs(delta) > 5) didDrag.current = true   // ← mark as drag
-      const mn    = getMinX()
-      let next    = dragStartPosX.current + delta
+      if (Math.abs(delta) > 5) didDrag.current = true
+      const mn = getMinX()
+      let next = dragStartPosX.current + delta
       if (next > 0)  next = next * 0.12
       if (next < mn) next = mn + (next - mn) * 0.12
       targetX.current     = next
       velX.current        = e.clientX - prevClientX.current
       prevClientX.current = e.clientX
     }
+
     const onUp = (e) => {
       if (!dragging.current) return
       dragging.current   = false
       outer.style.cursor = 'grab'
+
+      // ── Navigate if the user tapped without dragging ──────────────────
       if (!didDrag.current) {
         outer.releasePointerCapture(e.pointerId)
         targetX.current = posX.current
+
+        // Use downTarget — the real element under the pointer before capture
+        const card = downTarget.current?.closest('[data-url]')
+        if (card) window.open(card.getAttribute('data-url'), '_blank')
         return
       }
+
+      // Apply momentum after a real drag
       targetX.current = clamp(posX.current + velX.current * 8, getMinX(), 0)
       startLoop()
-      // reset didDrag after a short delay so the click event (which fires after pointerup) is suppressed
       setTimeout(() => { didDrag.current = false }, 50)
     }
+
     const onWheel = (e) => {
       e.preventDefault()
       targetX.current = clamp(targetX.current - e.deltaY * 1.4, getMinX(), 0)
@@ -296,21 +371,6 @@ const Archive = () => {
     }
   }, [isMobile, getMinX, startLoop])
 
-  /* desktop card stagger */
-  useEffect(() => {
-    if (isMobile) return
-    const cards = Array.from(trackRef.current?.querySelectorAll('article') ?? [])
-    cards.forEach((card, i) => {
-      card.style.opacity    = '0'
-      card.style.transform  = 'translateY(50px) scale(.96)'
-      card.style.transition = `opacity .8s ease ${.1 + i * .13}s, transform .85s cubic-bezier(.23,1,.32,1) ${.1 + i * .13}s`
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        card.style.opacity   = '1'
-        card.style.transform = 'translateY(0) scale(1)'
-      }))
-    })
-  }, [isMobile])
-
   /* ── Shared decorations ── */
   const Decorations = () => (
     <>
@@ -326,26 +386,21 @@ const Archive = () => {
   /* ── MOBILE layout ── */
   if (isMobile) {
     return (
-      <div id='archive' className='relative w-full h-full flex flex-col overflow-hidden select-none' >
+      <div ref={sectionRef} id='archive' className='relative w-full h-full flex flex-col overflow-hidden select-none'>
         <Decorations />
-        <header className='px-6 pt-7 pb-0 flex-none relative z-20'>
+        <header ref={headerRef} className='px-6 pt-7 pb-0 flex-none relative z-20'>
           <p className='robo text-[10px] tracking-normal uppercase text-[#9592FF] mb-[6px]'>Repository</p>
           <h1 className='fontone mb-3 text-white font-bold leading-none uppercase' style={{ fontSize: 'clamp(32px, 11vw, 56px)' }}>
             The archive
           </h1>
         </header>
-        <div className='relative z-20 py-12'>
+        <div ref={cardsRef} className='relative z-20 py-12'>
           <Swiper
             effect='cards'
             grabCursor
             modules={[EffectCards]}
             className='w-[78vw] !py-0 mx-auto'
-            cardsEffect={{
-              perSlideOffset: 8,
-              perSlideRotate: 3,
-              rotate: true,
-              slideShadows: false,
-            }}
+            cardsEffect={{ perSlideOffset: 8, perSlideRotate: 3, rotate: true, slideShadows: false }}
           >
             {PROJECTS.map(p => (
               <SwiperSlide key={p.id}>
@@ -354,7 +409,7 @@ const Archive = () => {
             ))}
           </Swiper>
         </div>
-        <footer className='mx-6 mb-7 flex-none flex items-center gap-4 relative z-20'>
+        <footer ref={footerRef} className='mx-6 mb-7 flex-none flex items-center gap-4 relative z-20'>
           <span className='robo text-[14px] uppercase text-[#868585] whitespace-nowrap'>Swipe to explore</span>
           <svg width={18} height={10} viewBox='0 0 18 10' fill='none' className='shrink-0'>
             <path d='M1 5h16M12 1l5 4-5 4' stroke='#868585' strokeWidth={1.3} strokeLinecap='round' strokeLinejoin='round' />
@@ -364,11 +419,11 @@ const Archive = () => {
     )
   }
 
-  /* ── DESKTOP / TABLET layout ── */
+  /* ── DESKTOP layout ── */
   return (
-    <div id='archive' className='relative w-full h-screen px-[4vw] flex flex-col overflow-hidden select-none' >
+    <div ref={sectionRef} id='archive' className='relative w-full h-screen px-[4vw] flex flex-col overflow-hidden select-none'>
       <Decorations />
-      <header className='px-11 pt-7 pb-0 flex-none relative z-20'>
+      <header ref={headerRef} className='px-11 pt-7 pb-0 flex-none relative z-20'>
         <p className='robo text-[10px] tracking-normal uppercase text-[#9592FF] mb-[6px] flex items-center gap-3'>
           Repository
         </p>
@@ -386,10 +441,10 @@ const Archive = () => {
           className='flex items-center gap-5 pl-11 pr-40 pb-6 pt-4 will-change-transform'
           style={{ userSelect: 'none' }}
         >
-          {PROJECTS.map(p => <Card key={p.id} project={p} didDrag={didDrag} />)}
+          {PROJECTS.map(p => <Card key={p.id} project={p} />)}
         </div>
       </div>
-      <footer className='mx-11 mb-7 flex-none flex items-center gap-4 relative z-20'>
+      <footer ref={footerRef} className='mx-11 mb-7 flex-none flex items-center gap-4 relative z-20'>
         <span className='robo text-[14px] uppercase text-[#868585] whitespace-nowrap'>Drag to explore</span>
         <svg width={18} height={10} viewBox='0 0 18 10' fill='none' className='shrink-0'>
           <path d='M1 5h16M12 1l5 4-5 4' stroke='#868585' strokeWidth={1.3} strokeLinecap='round' strokeLinejoin='round' />
