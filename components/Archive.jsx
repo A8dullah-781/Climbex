@@ -47,7 +47,7 @@ const useIsMobile = () => {
 }
 
 /* ─── Card (desktop) ───────────────────────────────────────────────────── */
-const Card = React.memo(({ project }) => {
+const Card = React.memo(({ project, didDrag }) => {
   const cardRef = useRef(null)
   const imgRef  = useRef(null)
   const ctaRef  = useRef(null)
@@ -77,8 +77,7 @@ const Card = React.memo(({ project }) => {
       ref={cardRef}
       onMouseEnter={enter}
       onMouseLeave={leave}
-      onClick={() => window.open(project.url, '_blank')}
-      className='relative w-[60vw] flex-none rounded-2xl overflow-hidden cursor-pointer will-change-transform'
+      className='relative w-[60vw] flex-none rounded-2xl overflow-hidden will-change-transform'
       style={{
         height: 'clamp(290px, 52vh, 600px)',
         border: '1px solid rgba(255,255,255,0.07)',
@@ -107,9 +106,12 @@ const Card = React.memo(({ project }) => {
       <span className='absolute top-[18px] left-5 robo text-[10px] uppercase font-bold text-white'>
         {project.index}
       </span>
-      <div
+
+      {/* ↓ Changed: div → button, removed pointer-events-none, added onClick */}
+      <button
         ref={ctaRef}
-        className='absolute top-[18px] right-5 flex items-center gap-2 pointer-events-none'
+        onClick={(e) => { e.stopPropagation(); window.open(project.url, '_blank') }}
+        className='absolute top-[18px] right-5 flex items-center gap-2 bg-transparent border-none p-0 cursor-pointer'
         style={{
           opacity: 0,
           transform: 'translateX(10px)',
@@ -118,7 +120,8 @@ const Card = React.memo(({ project }) => {
       >
         <span className='w-[6px] h-[6px] rounded-full bg-[#B8FF4F] shadow-[0_0_8px_#B8FF4F]' />
         <span className='robo text-[15px] uppercase font-bold text-[#B8FF4F]'>View</span>
-      </div>
+      </button>
+
       <div className='absolute bottom-0 left-0 right-0 z-10 px-6 pb-6'>
         <p className='robo text-[10px] uppercase text-[#DCDCDC] mb-[6px]'>{project.sub}</p>
         <h2 className='robo text-[4vw] text-white font-bold leading-none mb-3'>{project.title}</h2>
@@ -177,6 +180,7 @@ const Archive = () => {
   const targetX     = useRef(0)
   const velX        = useRef(0)
   const dragging    = useRef(false)
+  const didDrag     = useRef(false)   // ← NEW: true if pointer moved enough to be a drag
   const dragStartClientX = useRef(0)
   const dragStartPosX    = useRef(0)
   const prevClientX      = useRef(0)
@@ -226,6 +230,7 @@ const Archive = () => {
     const onDown = (e) => {
       outer.setPointerCapture(e.pointerId)
       dragging.current = true
+      didDrag.current  = false          // ← reset on each press
       dragStartClientX.current = e.clientX
       dragStartPosX.current    = posX.current
       prevClientX.current      = e.clientX
@@ -237,6 +242,7 @@ const Archive = () => {
     const onMove = (e) => {
       if (!dragging.current) return
       const delta = e.clientX - dragStartClientX.current
+      if (Math.abs(delta) > 5) didDrag.current = true   // ← mark as drag
       const mn    = getMinX()
       let next    = dragStartPosX.current + delta
       if (next > 0)  next = next * 0.12
@@ -249,14 +255,15 @@ const Archive = () => {
       if (!dragging.current) return
       dragging.current   = false
       outer.style.cursor = 'grab'
-      const movedX = Math.abs(e.clientX - dragStartClientX.current)
-      if (movedX < 5) {
+      if (!didDrag.current) {
         outer.releasePointerCapture(e.pointerId)
         targetX.current = posX.current
         return
       }
-      targetX.current    = clamp(posX.current + velX.current * 8, getMinX(), 0)
+      targetX.current = clamp(posX.current + velX.current * 8, getMinX(), 0)
       startLoop()
+      // reset didDrag after a short delay so the click event (which fires after pointerup) is suppressed
+      setTimeout(() => { didDrag.current = false }, 50)
     }
     const onWheel = (e) => {
       e.preventDefault()
@@ -319,16 +326,14 @@ const Archive = () => {
   /* ── MOBILE layout ── */
   if (isMobile) {
     return (
-      <div className='relative w-full h-full flex flex-col overflow-hidden select-none' >
+      <div id='archive' className='relative w-full h-full flex flex-col overflow-hidden select-none' >
         <Decorations />
-
         <header className='px-6 pt-7 pb-0 flex-none relative z-20'>
           <p className='robo text-[10px] tracking-normal uppercase text-[#9592FF] mb-[6px]'>Repository</p>
           <h1 className='fontone mb-3 text-white font-bold leading-none uppercase' style={{ fontSize: 'clamp(32px, 11vw, 56px)' }}>
             The archive
           </h1>
         </header>
-
         <div className='relative z-20 py-12'>
           <Swiper
             effect='cards'
@@ -349,7 +354,6 @@ const Archive = () => {
             ))}
           </Swiper>
         </div>
-
         <footer className='mx-6 mb-7 flex-none flex items-center gap-4 relative z-20'>
           <span className='robo text-[14px] uppercase text-[#868585] whitespace-nowrap'>Swipe to explore</span>
           <svg width={18} height={10} viewBox='0 0 18 10' fill='none' className='shrink-0'>
@@ -362,9 +366,8 @@ const Archive = () => {
 
   /* ── DESKTOP / TABLET layout ── */
   return (
-    <div className='relative w-full h-screen px-[4vw] flex flex-col overflow-hidden select-none' >
+    <div id='archive' className='relative w-full h-screen px-[4vw] flex flex-col overflow-hidden select-none' >
       <Decorations />
-
       <header className='px-11 pt-7 pb-0 flex-none relative z-20'>
         <p className='robo text-[10px] tracking-normal uppercase text-[#9592FF] mb-[6px] flex items-center gap-3'>
           Repository
@@ -373,7 +376,6 @@ const Archive = () => {
           The archive
         </h1>
       </header>
-
       <div
         ref={outerRef}
         className='flex-1 overflow-hidden relative z-20 flex items-center touch-none'
@@ -384,10 +386,9 @@ const Archive = () => {
           className='flex items-center gap-5 pl-11 pr-40 pb-6 pt-4 will-change-transform'
           style={{ userSelect: 'none' }}
         >
-          {PROJECTS.map(p => <Card key={p.id} project={p} />)}
+          {PROJECTS.map(p => <Card key={p.id} project={p} didDrag={didDrag} />)}
         </div>
       </div>
-
       <footer className='mx-11 mb-7 flex-none flex items-center gap-4 relative z-20'>
         <span className='robo text-[14px] uppercase text-[#868585] whitespace-nowrap'>Drag to explore</span>
         <svg width={18} height={10} viewBox='0 0 18 10' fill='none' className='shrink-0'>

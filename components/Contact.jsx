@@ -92,7 +92,7 @@ const Contact = () => {
   const focusedBorder = (name) => ({ borderColor: focused === name ? '#B8FF4F' : undefined })
 
   return (
-    <section
+    <section id='contact'
       className="w-full min-h-[80vh] flex items-center py-20 md:py-28"
       style={{ paddingLeft: '7.5vw', paddingRight: '7.5vw' }}
     >
@@ -177,7 +177,7 @@ const Contact = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B8FF4F] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B8FF4F]" />
             </span>
-            <span className="robo text-gray-500 text-[10px] tracking-[0.25em] uppercase">Available for new projects</span>
+            <span className="robo txtgray text-[10px]  uppercase">Available for new projects</span>
           </div>
         </div>
 
@@ -257,7 +257,7 @@ const Contact = () => {
                     <option value="" disabled className="text-gray-600 bg-[#0d0d0d]">Select a path</option>
                     <option value="launchpad" className="text-white bg-[#0d0d0d]">Launch Pad</option>
                     <option value="elitebuild" className="text-white bg-[#0d0d0d]">Elite Build</option>
-                    <option value="other" className="text-white bg-[#0d0d0d]">Other</option>
+                    <option value="bookcall" className="text-white bg-[#0d0d0d]">Book A Call</option>
                   </select>
                   <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-600">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

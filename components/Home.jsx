@@ -31,6 +31,16 @@ const useMagnetic = (strength = 0.3) => {
   return ref
 }
 
+const scrollTo = (id) => {
+  const el = document.getElementById(id)
+  if (!el) return
+  if (window.__lenis) {
+    window.__lenis.scrollTo(el, { duration: 1.2 })
+  } else {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
 const Home = ({ registerStart }) => {
   const tagRef          = useRef(null)
   const titleRef        = useRef(null)
@@ -99,7 +109,7 @@ const Home = ({ registerStart }) => {
       {/* Cursor */}
       <div
         ref={cursorRef}
-        className='fixed top-0 left-0 w-3 h-3 bg-[#D2FF9A] rounded-full pointer-events-none z-[9999] mix-blend-difference will-change-transform'
+        className='hidden lg:block fixed top-0 left-0 w-3 h-3 bg-[#D2FF9A] rounded-full pointer-events-none z-[9999] mix-blend-difference will-change-transform'
         style={{ transform: 'translate3d(-500px,-500px,0)' }}
       />
 
@@ -148,6 +158,7 @@ const Home = ({ registerStart }) => {
             <div
               ref={primaryBtnRef}
               data-hover
+              onClick={() => scrollTo('archive')}
               className='text-[3vw] sm:text-[1.8vw] md:text-[1.2vw] lg:text-[1vw] px-6 sm:px-8 py-3 sm:py-4 bg-[#D2FF9A] rounded-full font-bold cursor-pointer will-change-transform'
               style={{ color: '#000' }}
             >
@@ -156,9 +167,10 @@ const Home = ({ registerStart }) => {
             <div
               ref={secondaryBtnRef}
               data-hover
+              onClick={() => scrollTo('contact')}
               className='text-[3vw] sm:text-[1.8vw] md:text-[1.2vw] lg:text-[1vw] txtwhite px-6 sm:px-8 py-3 sm:py-4 border border-[#605F5F] rounded-full cursor-pointer will-change-transform'
             >
-              THE PROTOCOL
+              SEE PRICING
             </div>
           </div>
 

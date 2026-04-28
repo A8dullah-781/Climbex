@@ -63,7 +63,7 @@ const About = () => {
   }, []);
 
   return (
-    <section
+    <section id="about"
       ref={ref}
       className="px-[7.5vw] py-20 lg:py-28 overflow-hidden relative"
     >
@@ -241,10 +241,10 @@ const About = () => {
         className="mt-14 lg:mt-16 flex items-center justify-between flex-wrap gap-4"
         style={fadeUp(visible, 740)}
       >
-        <span className="robo text-[0.65rem] tracking-[0.2em] text-white/20 uppercase">
+        <span className="robo text-[0.65rem] tracking-[0.2em] txtdgray uppercase">
           Est. 2026 — Global
         </span>
-        <span className="robo flex items-center gap-2 text-[0.65rem] tracking-[0.12em] text-white/20 uppercase">
+        <span className="robo flex items-center gap-2 text-[0.65rem] tracking-[0.12em] txtdgray uppercase">
           <span
             className="w-[6px] h-[6px] rounded-full bg-[#b4ff3c]"
             style={{ animation: "abpulse 2s ease-in-out infinite" }}

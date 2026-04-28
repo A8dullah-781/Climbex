@@ -9,7 +9,6 @@ const faqs = [
     q: "DO YOU OFFER POST-LAUNCH MAINTENANCE?",
     a: "Yes. We offer ongoing retainer packages for clients who need continuous updates, performance monitoring, and feature additions. Think of us as your long-term engineering partner, not just a one-time vendor."
   },
-  
   {
     q: "HOW DO I GET STARTED?",
     a: "Book a free discovery call. We'll understand your goals, walk you through the process, and propose the right engagement. No sales pressure — just clarity on whether we're the right fit for each other."
@@ -42,10 +41,8 @@ const faqs = [
     q: "WHAT MAKES DEVHOLIX DIFFERENT FROM OTHER AGENCIES?",
     a: "We don't use templates, generic layouts, or recycled code. Every project is engineered from scratch with a focus on speed, design quality, and conversion. We treat your business like it's our own."
   },
- 
 ]
 
-/* ─── Magnetic Button ─────────────────────────────────────────────────────── */
 const MagneticButton = ({ children, className, onClick }) => {
   const btnRef = useRef(null)
   const [pos, setPos] = useState({ x: 0, y: 0 })
@@ -106,7 +103,6 @@ const MagneticButton = ({ children, className, onClick }) => {
   )
 }
 
-/* ─── Intersection Observer Hook ─────────────────────────────────────────── */
 const useInView = (threshold = 0.15) => {
   const ref = useRef(null)
   const [inView, setInView] = useState(false)
@@ -125,7 +121,6 @@ const useInView = (threshold = 0.15) => {
   return [ref, inView]
 }
 
-/* ─── FAQ Item ────────────────────────────────────────────────────────────── */
 const FaqItem = ({ faq, index, isOpen, onToggle }) => {
   const [ref, inView] = useInView(0.1)
   const answerRef = useRef(null)
@@ -152,13 +147,10 @@ const FaqItem = ({ faq, index, isOpen, onToggle }) => {
           : 'bg-[#181818] border-[#2a2a2a] hover:border-[#3a3a3a]'
       }`}
     >
-      {/* Question Row */}
       <div className="flex items-center justify-between px-5 sm:px-7 py-4 sm:py-5 gap-4">
         <span className="txtwhite fontone font-black uppercase text-xs sm:text-sm tracking-wide leading-snug">
           {faq.q}
         </span>
-
-        {/* Animated icon */}
         <div
           className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center border"
           style={{
@@ -177,7 +169,6 @@ const FaqItem = ({ faq, index, isOpen, onToggle }) => {
         </div>
       </div>
 
-      {/* Smooth height-animated answer */}
       <div
         style={{
           height: `${height}px`,
@@ -211,7 +202,6 @@ const FaqItem = ({ faq, index, isOpen, onToggle }) => {
   )
 }
 
-/* ─── Main Component ──────────────────────────────────────────────────────── */
 const Faqs = () => {
   const [open, setOpen] = useState(null)
   const [headerRef, headerInView] = useInView(0.2)
@@ -219,14 +209,15 @@ const Faqs = () => {
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
+  const scrollToContact = () => {
+    const contact = document.getElementById('contact')
+    if (contact) contact.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div className="w-full py-16 md:py-24 flex flex-col items-center">
 
-      {/* ── Header ── */}
-      <div
-        ref={headerRef}
-        className="text-center mb-10 md:mb-14 w-[92%] sm:w-[88%] lg:w-[82%]"
-      >
+      <div ref={headerRef} className="text-center mb-10 md:mb-14 w-[92%] sm:w-[88%] lg:w-[82%]">
         <p
           className="txtgreen robo tracking-[0.3em] uppercase text-[10px] sm:text-xs mb-3"
           style={{
@@ -259,7 +250,6 @@ const Faqs = () => {
         </p>
       </div>
 
-      {/* ── FAQ List ── */}
       <div className="flex flex-col gap-3 w-[92%] sm:w-[88%] lg:w-[82%]">
         {faqs.map((faq, i) => (
           <FaqItem
@@ -272,7 +262,6 @@ const Faqs = () => {
         ))}
       </div>
 
-      {/* ── CTA Block ── */}
       <div
         ref={ctaRef}
         className="mt-14 md:mt-20 w-[92%] sm:w-[88%] lg:w-[82%] bg-[#B8FF4F] rounded-3xl px-6 sm:px-10 py-10 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-8"
@@ -282,7 +271,6 @@ const Faqs = () => {
           transition: 'opacity 0.75s cubic-bezier(0.23,1,0.32,1), transform 0.75s cubic-bezier(0.23,1,0.32,1)',
         }}
       >
-        {/* Text — left-aligned always */}
         <div
           className="text-left"
           style={{
@@ -302,7 +290,6 @@ const Faqs = () => {
           </p>
         </div>
 
-        {/* Magnetic Button — pinned to the right */}
         <div
           className="flex-shrink-0 w-full sm:w-auto flex sm:justify-end"
           style={{
@@ -311,7 +298,10 @@ const Faqs = () => {
             transition: 'opacity 0.7s ease 0.35s, transform 0.7s cubic-bezier(0.23,1,0.32,1) 0.35s',
           }}
         >
-          <MagneticButton className="bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] w-full sm:w-auto whitespace-nowrap">
+          <MagneticButton
+            onClick={scrollToContact}
+            className="bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] w-full sm:w-auto whitespace-nowrap"
+          >
             Book a Free Call
           </MagneticButton>
         </div>

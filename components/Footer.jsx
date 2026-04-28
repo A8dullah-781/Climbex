@@ -1,19 +1,58 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { gsap } from 'gsap'
+import { SplitText } from 'gsap/SplitText'
+import { CustomEase } from 'gsap/CustomEase'
 import { FaWhatsapp } from 'react-icons/fa'
 
-const Footer = () => {
-  const [hovered, setHovered] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const footerRef = useRef(null)
+gsap.registerPlugin(SplitText, CustomEase)
+CustomEase.create('expo.hard', '0.16, 1, 0.3, 1')
 
+const Footer = () => {
+  const [hovered, setHovered]   = useState(null)
+  const [visible, setVisible]   = useState(false)
+  const footerRef  = useRef(null)
+  const titleRef   = useRef(null)
+  const hasPlayed  = useRef(false)
+
+  /* ── Intersection observer → trigger once ── */
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
+      ([entry]) => {
+        if (entry.isIntersecting && !hasPlayed.current) {
+          hasPlayed.current = true
+          setVisible(true)
+        }
+      },
       { threshold: 0.2 }
     )
     if (footerRef.current) observer.observe(footerRef.current)
     return () => observer.disconnect()
   }, [])
+
+  /* ── SplitText animation — fires when visible flips true ── */
+  useEffect(() => {
+    if (!visible || !titleRef.current) return
+
+    const split = new SplitText(titleRef.current, { type: 'chars' })
+
+    gsap.set(split.chars, {
+      opacity: 0,
+      y: 60,
+      rotateX: -80,
+      transformOrigin: '50% 50% -40px',
+    })
+
+    gsap.to(split.chars, {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      stagger: 0.04,
+      duration: 0.5,
+      ease: 'expo.hard',
+      delay: 0.15,
+      onComplete: () => split.revert(),
+    })
+  }, [visible])
 
   const links = [
     {
@@ -23,7 +62,7 @@ const Footer = () => {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.28-1.28a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
         </svg>
-      )
+      ),
     },
     {
       label: 'ABDULLAH@DEVHOLIX.COM',
@@ -33,13 +72,13 @@ const Footer = () => {
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
           <polyline points="22,6 12,13 2,6"/>
         </svg>
-      )
+      ),
     },
     {
       label: '+92 327 1563383',
       href: 'https://wa.me/923271563383?text=I%E2%80%99m%20looking%20to%20build%20a%20high-impact%20digital%20presence.%20Let%E2%80%99s%20schedule%20a%20call%20and%20move%20forward%20with%20clarity.',
-      icon: <FaWhatsapp size={16} />
-    }
+      icon: <FaWhatsapp size={16} />,
+    },
   ]
 
   return (
@@ -48,33 +87,34 @@ const Footer = () => {
       className="bg-black w-full overflow-hidden"
       style={{ paddingLeft: '7.5vw', paddingRight: '7.5vw' }}
     >
+      {/* ── Top divider ── */}
       <div
         className="w-full h-px bg-gray-800 transition-all duration-1000"
         style={{ transform: visible ? 'scaleX(1)' : 'scaleX(0)', transformOrigin: 'left' }}
       />
 
+      {/* ── DEVHOLIX heading — SplitText matches Home exactly ── */}
       <div className="py-10 md:py-14 overflow-hidden">
         <h1
+          ref={titleRef}
           className="robo font-black text-white leading-none select-none"
           style={{
             fontSize: 'clamp(60px, 13vw, 180px)',
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(60px)',
-            transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)',
-            transitionDelay: '0.1s'
+            perspective: '800px',          /* same perspective as Home */
           }}
         >
           DEVHOLIX
         </h1>
       </div>
 
+      {/* ── Bottom row ── */}
       <div
         className="pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0)' : 'translateY(20px)',
           transition: 'opacity 0.8s ease, transform 0.8s ease',
-          transitionDelay: '0.35s'
+          transitionDelay: '0.35s',
         }}
       >
         <div className="flex flex-col gap-3">

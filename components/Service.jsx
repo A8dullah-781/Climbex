@@ -19,46 +19,46 @@ const Service = () => {
 
       /* ── 1. Label ── */
       tl.fromTo(".s-label",
-        { autoAlpha: 0, y: 10 },
-        { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }
+        { autoAlpha: 0, y: 8 },
+        { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" }
       );
 
       /* ── 2. Heading ── */
       tl.fromTo(".s-head",
-        { autoAlpha: 0, y: 28 },
-        { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out" },
-        "-=0.25"
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.35, ease: "power3.out" },
+        "-=0.15"
       );
 
       /* ── 3. Sub text ── */
       tl.fromTo(".s-sub",
-        { autoAlpha: 0, y: 18 },
-        { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.45"
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" },
+        "-=0.2"
       );
 
       /* ── 4. Thin divider line wipe ── */
       tl.fromTo(".s-line",
         { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, duration: 0.9, ease: "expo.inOut" },
-        "-=0.3"
+        { scaleX: 1, duration: 0.5, ease: "expo.inOut" },
+        "-=0.25"
       );
 
-      /* ── 5. Cards: fade + 1px rise, tight stagger ── */
+      /* ── 5. Cards: fire almost immediately ── */
       tl.fromTo(".s-card",
-        { autoAlpha: 0, y: 22 },
+        { autoAlpha: 0, y: 16 },
         {
           autoAlpha: 1, y: 0,
-          duration: 0.65, stagger: 0.1, ease: "power2.out",
+          duration: 0.45, stagger: 0.07, ease: "power2.out",
         },
-        "-=0.4"
+        "-=0.4"   // overlaps heavily with the line wipe
       );
 
-      /* ── 6. Images: clean fade only (no bounce, no rotate) ── */
+      /* ── 6. Images: fade in with cards ── */
       tl.fromTo(".s-img",
         { autoAlpha: 0 },
-        { autoAlpha: 1, duration: 0.5, stagger: 0.08, ease: "power1.out" },
-        "-=0.5"
+        { autoAlpha: 1, duration: 0.35, stagger: 0.05, ease: "power1.out" },
+        "<"   // starts at same time as cards
       );
 
     }, sectionRef);
@@ -67,7 +67,7 @@ const Service = () => {
   }, []);
 
   return (
-    <div ref={sectionRef} className="min-h-screen px-[7.5vw] w-full">
+    <div id="service" ref={sectionRef} className="min-h-screen px-[7.5vw] w-full">
 
       {/* ── Header ── */}
       <div className="py-6 sm:py-8">

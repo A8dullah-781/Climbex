@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import gsap from 'gsap'
 
-const links = ['Work', 'Services', 'Process', 'About']
+const links = [
+  { label: 'Archive',     id: 'archive'     },
+  { label: 'Services', id: 'service' },
+  { label: 'About',    id: 'about'    },
+  { label: 'Contact',    id: 'contact'    },
+]
 
 const Navbar = () => {
   const [activeLink, setActiveLink] = useState(null)
@@ -12,6 +17,16 @@ const Navbar = () => {
   const mobileItemRefs  = useRef([])
   const mobileCTARef    = useRef(null)
   const lastScroll      = useRef(0)
+
+  const scrollTo = (id) => {
+  const el = document.getElementById(id)
+  if (!el) return
+  if (window.__lenis) {
+    window.__lenis.scrollTo(el, { offset: 0, duration: 1.2 })
+  } else {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 
   /* ── hide/show on scroll ── */
   useEffect(() => {
@@ -73,23 +88,26 @@ const Navbar = () => {
       <div className='hidden md:flex flex-row gap-10 robo uppercase text-[1vw]'>
         {links.map(link => (
           <div
-            key={link}
-            onClick={() => setActiveLink(link)}
-            className={`relative cursor-pointer pb-1 overflow-hidden group ${activeLink === link ? 'text-[#D2FF9A]' : 'txtgray'}`}
+            key={link.label}
+            onClick={() => { setActiveLink(link.label); scrollTo(link.id) }}
+            className={`relative cursor-pointer pb-1 overflow-hidden group ${activeLink === link.label ? 'text-[#D2FF9A]' : 'txtgray'}`}
           >
-            <span className='block transition-transform duration-300 ease-out group-hover:-translate-y-full'>
-              {link}
+            <span className='block md:transition-none md:group-hover:translate-y-0 lg:transition-transform lg:duration-300 lg:ease-out lg:group-hover:-translate-y-full transition-transform duration-300 ease-out group-hover:-translate-y-full'>
+              {link.label}
             </span>
-            <span className='absolute top-0 left-0 text-[#D2FF9A] translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0'>
-              {link}
+            <span className='absolute top-0 left-0 text-[#D2FF9A] translate-y-full md:translate-y-0 md:hidden lg:flex lg:translate-y-full lg:transition-transform lg:duration-300 lg:ease-out lg:group-hover:translate-y-0 transition-transform duration-300 ease-out group-hover:translate-y-0'>
+              {link.label}
             </span>
-            <span className='absolute bottom-0 left-0 h-px bg-[#D2FF9A] w-0 transition-all duration-300 ease-out group-hover:w-full' />
+            <span className='absolute bottom-0 left-0 h-px bg-[#D2FF9A] w-0 md:hidden lg:block transition-all duration-300 ease-out group-hover:w-full' />
           </div>
         ))}
       </div>
 
       {/* Desktop CTA */}
-      <div className='hidden md:block robo text-black text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'>
+      <div
+        onClick={() => scrollTo('pricing')}
+        className='hidden md:block robo text-black text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'
+      >
         <span className='relative z-10 transition-colors duration-300 mt-0.5 group-hover:text-black'>START PROJECT</span>
         <span className='absolute inset-0 bg-[#D2FF9A] -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0 rounded-3xl' />
       </div>
@@ -114,17 +132,18 @@ const Navbar = () => {
         <div className='flex flex-col px-6 py-3 pb-7 gap-1'>
           {links.map((link, i) => (
             <div
-              key={link}
+              key={link.label}
               ref={el => (mobileItemRefs.current[i] = el)}
-              onClick={() => { setActiveLink(link); setTimeout(() => setMenuOpen(false), 200) }}
-              className={`flex items-center justify-between py-4 cursor-pointer robo uppercase text-[3vw] tracking-widest border-b border-white/5 transition-all duration-200 hover:text-[#D2FF9A] hover:pl-3 ${activeLink === link ? 'text-[#D2FF9A] pl-3' : 'txtgray'}`}
+              onClick={() => { setActiveLink(link.label); scrollTo(link.id); setTimeout(() => setMenuOpen(false), 200) }}
+              className={`flex items-center justify-between py-4 cursor-pointer robo uppercase text-[3vw] tracking-widest border-b border-white/5 transition-all duration-200 hover:text-[#D2FF9A] hover:pl-3 ${activeLink === link.label ? 'text-[#D2FF9A] pl-3' : 'txtgray'}`}
             >
-              {link}
+              {link.label}
               <span className='text-[10px] opacity-0 -translate-x-2 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0'>→</span>
             </div>
           ))}
           <button
             ref={mobileCTARef}
+            onClick={() => { scrollTo('pricing'); setTimeout(() => setMenuOpen(false), 200) }}
             className='robo uppercase tracking-widest text-[2.5vw] rounded-3xl px-6 py-3 mt-4 w-full bgwhite text-black relative overflow-hidden group cursor-pointer'
           >
             <span className='relative z-10 transition-colors duration-300 group-hover:text-black'>START PROJECT</span>

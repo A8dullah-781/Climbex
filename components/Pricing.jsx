@@ -1,11 +1,13 @@
+// In MagneticBtn, add onClick prop and pass it to button
+// In Pricing, add click handler that scrolls to #contact
+
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ── Magnetic CTA button ── */
-const MagneticBtn = ({ children, dark, className }) => {
+const MagneticBtn = ({ children, dark, className, onClick }) => {
   const btnRef = useRef(null)
   const textRef = useRef(null)
 
@@ -33,6 +35,7 @@ const MagneticBtn = ({ children, dark, className }) => {
   return (
     <button
       ref={btnRef}
+      onClick={onClick}
       className={`mt-10 w-full fontone font-black uppercase tracking-widest text-sm py-4 rounded-full transition-colors duration-300 ${className}`}
     >
       <span ref={textRef} className="block">{children}</span>
@@ -53,27 +56,23 @@ const Pricing = () => {
         scrollTrigger: { trigger: secRef.current, start: 'top 78%', once: true },
       })
 
-      /* label */
       tl.fromTo(labelRef.current,
         { autoAlpha: 0, y: 12, letterSpacing: '0.6em' },
         { autoAlpha: 1, y: 0, letterSpacing: '0.3em', duration: 0.7, ease: 'power3.out' }
       )
 
-      /* heading: clip-mask reveal word by word */
       tl.fromTo(headRef.current,
         { autoAlpha: 0, y: 48, skewY: 4 },
         { autoAlpha: 1, y: 0, skewY: 0, duration: 0.9, ease: 'expo.out' },
         '-=0.4'
       )
 
-      /* card 1: slide from left */
       tl.fromTo(card1Ref.current,
         { autoAlpha: 0, x: -50, y: 30 },
         { autoAlpha: 1, x: 0, y: 0, duration: 0.85, ease: 'power3.out' },
         '-=0.5'
       )
 
-      /* card 2: slide from right + slight scale */
       tl.fromTo(card2Ref.current,
         { autoAlpha: 0, x: 50, y: 30, scale: 0.97 },
         { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' },
@@ -84,6 +83,13 @@ const Pricing = () => {
 
     return () => ctx.revert()
   }, [])
+
+  const scrollToContact = () => {
+    const contact = document.getElementById('contact')
+    if (contact) {
+      contact.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
 
   const features1 = [
     'Built to get you online, not stuck in drafts',
@@ -99,9 +105,8 @@ const Pricing = () => {
   ]
 
   return (
-    <div ref={secRef} className="w-full px-[7.5vw] py-16 sm:py-20">
+    <div id='pricing' ref={secRef} className="w-full px-[7.5vw] py-16 sm:py-20">
 
-      {/* Header */}
       <div className="text-center mb-10 sm:mb-14">
         <p ref={labelRef} className="txtgreen robo tracking-[0.3em] uppercase text-xs mb-4 mt-8">
           Tiered Engagement
@@ -112,10 +117,8 @@ const Pricing = () => {
         </h2>
       </div>
 
-      {/* Cards */}
       <div className="flex flex-col md:flex-row justify-center items-stretch gap-5 w-full">
 
-        {/* Launch Pad */}
         <div ref={card1Ref}
           className="flex flex-col justify-between bg-[#201F1F] rounded-3xl p-8 md:p-10 w-full md:w-1/2 lg:w-[38%]"
           style={{ minHeight: 'clamp(420px, 55vh, 560px)' }}>
@@ -141,12 +144,11 @@ const Pricing = () => {
               ))}
             </ul>
           </div>
-          <MagneticBtn className="bg-white text-black hover:bg-[#B8FF4F]">
+          <MagneticBtn onClick={scrollToContact} className="bg-white text-black hover:bg-[#B8FF4F]">
             Launch Now
           </MagneticBtn>
         </div>
 
-        {/* Elite Build */}
         <div ref={card2Ref}
           className="relative flex flex-col justify-between bg-[#D2FF9A] rounded-3xl p-8 md:p-10 w-full md:w-1/2 lg:w-[38%]"
           style={{ minHeight: 'clamp(420px, 55vh, 560px)' }}>
@@ -179,7 +181,7 @@ const Pricing = () => {
             </ul>
           </div>
 
-          <MagneticBtn className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
+          <MagneticBtn onClick={scrollToContact} className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
             Book a Free Call
           </MagneticBtn>
         </div>
