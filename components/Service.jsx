@@ -115,7 +115,7 @@ const Service = () => {
           <div className="flex flex-col gap-6 sm:gap-10">
             <div className="flex flex-row justify-between items-center">
               <div className="s-img">
-                <img src="/images/uiux.png" alt="UI/UX" className="w-[clamp(28px,2.8vw,42px)]" />
+                <img src="/images/uiux.webp" alt="UI/UX" className="w-[clamp(28px,2.8vw,42px)]" />
               </div>
               <div className="txtgray robo text-[clamp(10px,1vw,12px)] tracking-widest">
                 01/ DESIGN
@@ -151,7 +151,7 @@ const Service = () => {
           <div className="flex flex-col gap-6 sm:gap-10">
             <div className="flex flex-row justify-between items-center">
               <div className="s-img">
-                <img src="/images/dev.png" alt="Dev" className="w-[clamp(28px,2.8vw,42px)]" />
+                <img src="/images/dev.webp" alt="Dev" className="w-[clamp(28px,2.8vw,42px)]" />
               </div>
               <div className="txtgray robo text-[clamp(10px,1vw,12px)] tracking-widest">
                 02/ CODE
@@ -190,7 +190,7 @@ const Service = () => {
           }}
         >
           <div className="s-img">
-            <img src="/images/performance.png" alt="Performance" className="w-[clamp(28px,2.8vw,42px)]" />
+            <img src="/images/performance.webp" alt="Performance" className="w-[clamp(28px,2.8vw,42px)]" />
           </div>
           <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] mt-3 sm:mt-4 txtwhite font-semibold">
             Performance
@@ -202,7 +202,7 @@ const Service = () => {
             </div>
             <div className="s-img">
               <img
-                src="/images/bars.png"
+                src="/images/bars.webp"
                 alt="Bars"
                 className="w-full sm:w-[clamp(120px,18vw,260px)] sm:-mt-4"
               />
@@ -228,7 +228,7 @@ const Service = () => {
           }}
         >
           <div className="s-img">
-            <img src="/images/deploy.png" alt="Deploy" className="w-[clamp(28px,2.8vw,42px)]" />
+            <img src="/images/deploy.webp" alt="Deploy" className="w-[clamp(28px,2.8vw,42px)]" />
           </div>
           <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] txtwhite font-semibold">
             Deployment
