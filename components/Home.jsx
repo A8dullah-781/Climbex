@@ -167,7 +167,7 @@ const Home = ({ registerStart }) => {
             <div
               ref={secondaryBtnRef}
               data-hover
-              onClick={() => scrollTo('contact')}
+              onClick={() => scrollTo('pricing')}
               className='text-[3vw] sm:text-[1.8vw] md:text-[1.2vw] lg:text-[1vw] txtwhite px-6 sm:px-8 py-3 sm:py-4 border border-[#605F5F] rounded-full cursor-pointer will-change-transform'
             >
               SEE PRICING
