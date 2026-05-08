@@ -138,7 +138,7 @@ const Card = React.memo(({ project }) => {
         }}
       >
         <span className='w-[6px] h-[6px] rounded-full bg-[#B8FF4F] shadow-[0_0_8px_#B8FF4F]' />
-        <span className='robo text-[15px] uppercase font-bold text-[#B8FF4F]'>View</span>
+        <span className='robo text-[15px] uppercase font-bold text-[#B8FF4F]'>View Live Site</span>
       </div>
 
       <div className='absolute bottom-0 left-0 right-0 z-10 px-6 pb-6'>

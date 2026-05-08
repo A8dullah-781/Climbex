@@ -50,7 +50,7 @@ const Home = ({ registerStart }) => {
   const primaryBtnRef   = useMagnetic(0.3)
   const secondaryBtnRef = useMagnetic(0.3)
 
-  /* ── cursor (rAF only when moving) ── */
+  /* ── cursor ── */
   useEffect(() => {
     const cursor = cursorRef.current
     if (!cursor) return
@@ -87,11 +87,6 @@ const Home = ({ registerStart }) => {
     const titleSplit = new SplitText(titleRef.current, { type: 'chars' })
     const descSplit  = new SplitText(descRef.current,  { type: 'words' })
 
-    gsap.set(tagEls,             { opacity: 0, y: 20 })
-    gsap.set(titleSplit.chars,   { opacity: 0, y: 60, rotateX: -80, transformOrigin: '50% 50% -40px' })
-    gsap.set(descSplit.words,    { opacity: 0, y: 12 })
-    gsap.set(btnsRowRef.current, { opacity: 0, y: 20 })
-
     const playIntro = () => {
       const tl = gsap.timeline({ defaults: { ease: 'expo.hard' } })
       tl.to(tagEls,             { opacity: 1, y: 0, stagger: 0.08, duration: 0.55 })
@@ -100,7 +95,18 @@ const Home = ({ registerStart }) => {
         .to(btnsRowRef.current, { opacity: 1, y: 0, duration: 0.5 }, '-=0.1')
     }
 
-    registerStart?.(playIntro)
+    if (!window.__firstLoadDone) {
+      // First ever load — hide everything and wait for loader to trigger
+      gsap.set(tagEls,             { opacity: 0, y: 20 })
+      gsap.set(titleSplit.chars,   { opacity: 0, y: 60, rotateX: -80, transformOrigin: '50% 50% -40px' })
+      gsap.set(descSplit.words,    { opacity: 0, y: 12 })
+      gsap.set(btnsRowRef.current, { opacity: 0, y: 20 })
+      registerStart?.(playIntro)
+    } else {
+      // Navigating back — play immediately, no hiding
+      playIntro()
+    }
+
     return () => { titleSplit.revert(); descSplit.revert() }
   }, [])
 
@@ -162,7 +168,7 @@ const Home = ({ registerStart }) => {
               className='text-[3vw] sm:text-[1.8vw] md:text-[1.2vw] lg:text-[1vw] px-6 sm:px-8 py-3 sm:py-4 bg-[#D2FF9A] rounded-full font-bold cursor-pointer will-change-transform'
               style={{ color: '#000' }}
             >
-              EXPLORE ARCHIVE
+              EXPLORE PROJECTS
             </div>
             <div
               ref={secondaryBtnRef}

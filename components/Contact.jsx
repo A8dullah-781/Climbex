@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import emailjs from '@emailjs/browser'
 
 /* ─── Intersection Observer Hook ─────────────────────────────────────────── */
 const useInView = (threshold = 0.15) => {
@@ -79,13 +80,28 @@ const Contact = () => {
   const [focused, setFocused] = useState(null)
   const [leftRef, leftInView] = useInView(0.1)
   const [rightRef, rightInView] = useInView(0.1)
+  const formRef = useRef(null)
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 10000)
+
+    emailjs
+      .sendForm(
+        "service_049904t",
+        "template_2945nga",
+        formRef.current,
+        "M57wvTXlNURFmUFXx"
+      )
+      .then(() => {
+        setSubmitted(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+        setTimeout(() => setSubmitted(false), 10000)
+      })
+      .catch((err) => {
+        console.error("EmailJS error:", err)
+      })
   }
 
   const inputBase = "robo bg-[#161616] border-b border-[#2a2a2a] text-white text-sm placeholder-gray-600 px-2 py-3 focus:outline-none w-full transition-colors duration-300"
@@ -102,7 +118,7 @@ const Contact = () => {
         <div ref={leftRef} className="flex flex-col gap-8">
 
           <p
-            className="robo text-[#B8FF4F] text-[10px] tracking-[0.4em] uppercase"
+            className="robo txtblue text-[10px] tracking-[0.4em] uppercase"
             style={{
               opacity: leftInView ? 1 : 0,
               transform: leftInView ? 'translateX(0)' : 'translateX(-24px)',
@@ -177,7 +193,7 @@ const Contact = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B8FF4F] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B8FF4F]" />
             </span>
-            <span className="robo txtgray text-[10px]  uppercase">Available for new projects</span>
+            <span className="robo txtgray text-[10px] uppercase">Available for new projects</span>
           </div>
         </div>
 
@@ -209,7 +225,7 @@ const Contact = () => {
               }}
             />
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-7">
+            <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-7">
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <AnimatedField label="IDENTITY" delay={0.3} inView={rightInView}>
@@ -255,9 +271,9 @@ const Contact = () => {
                     style={{ color: formData.subject ? 'white' : '#4b5563', ...focusedBorder('subject') }}
                   >
                     <option value="" disabled className="text-gray-600 bg-[#0d0d0d]">Select a path</option>
-                    <option value="launchpad" className="text-white bg-[#0d0d0d]">Launch Pad</option>
-                    <option value="elitebuild" className="text-white bg-[#0d0d0d]">Elite Build</option>
-                    <option value="bookcall" className="text-white bg-[#0d0d0d]">Book A Call</option>
+                    <option value="Launch Pad" className="text-white bg-[#0d0d0d]">Launch Pad</option>
+                    <option value="Elite Build" className="text-white bg-[#0d0d0d]">Elite Build</option>
+                   
                   </select>
                   <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-600">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

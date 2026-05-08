@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import Lenis from '@studio-freight/lenis'
+
+import { TransitionProvider, useTransition } from '../src/context/TransitionContext'
+
 import Navbar      from '../components/Navbar'
 import Home        from '../components/Home'
 import About       from '../components/About'
@@ -12,15 +16,15 @@ import Pricing     from '../components/Pricing'
 import Faqs        from '../components/Faqs'
 import Contact     from '../components/Contact'
 import Footer      from '../components/Footer'
-import Work from '../components/Work'
-import Archive from '../components/Archive'
+import Work        from '../components/Work'
+import Archive     from '../components/Archive'
+import BookCall    from '../components/BookCall'
 
 gsap.registerPlugin(CustomEase)
-CustomEase.create('tile.drop',  '0.55, 0, 1, 0.45')
-CustomEase.create('expo.hard',  '0.16, 1, 0.3, 1')
-CustomEase.create('expo.soft',  '0.22, 1, 0.36, 1')
+CustomEase.create('tile.drop', '0.55, 0, 1, 0.45')
+CustomEase.create('expo.hard', '0.16, 1, 0.3, 1')
+CustomEase.create('expo.soft', '0.22, 1, 0.36, 1')
 
-/* ── grid constants — unchanged ── */
 const COLS  = 12
 const ROWS  = 8
 const TOTAL = COLS * ROWS
@@ -45,16 +49,172 @@ const MAX_ENTRY = Math.max(...ENTRY_DELAYS)
 const MAX_EXIT  = Math.max(...EXIT_DELAYS)
 
 /* ════════════════════════════════
-   LOADER
+   WAVE PATH BUILDER
 ════════════════════════════════ */
-const Loader = ({ onComplete }) => {
+const W   = 400
+const H   = 32
+const CY  = H / 2
+const AMP = 9      // wave height — bigger = more dramatic like your reference
+const SEG = 40     // wave period width
+
+const buildWavePath = () => {
+  const steps = W / SEG
+  let d = `M 0 ${CY}`
+  for (let i = 0; i < steps; i++) {
+    const x0  = i * SEG
+    const x1  = x0 + SEG
+    const cp1y = i % 2 === 0 ? CY - AMP : CY + AMP
+    const cp2y = i % 2 === 0 ? CY - AMP : CY + AMP
+    d += ` C ${x0 + SEG * 0.3} ${cp1y}, ${x0 + SEG * 0.7} ${cp2y}, ${x1} ${CY}`
+  }
+  return d
+}
+
+const WAVE_PATH_D = buildWavePath()
+
+/* 
+  Pre-compute ball position by sampling the SVG path at t=0..1
+  We do this at runtime using a hidden SVGPathElement 
+*/
+const getPathSampler = () => {
+  if (typeof document === 'undefined') return () => ({ x: 0, y: CY })
+  const svg  = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  path.setAttribute('d', WAVE_PATH_D)
+  svg.appendChild(path)
+  document.body.appendChild(svg)
+  svg.style.position = 'absolute'
+  svg.style.opacity  = '0'
+  svg.style.pointerEvents = 'none'
+  const len = path.getTotalLength()
+  document.body.removeChild(svg)
+  return (progress) => {
+    const pt = path.getPointAtLength(progress * len)
+    return { x: pt.x, y: pt.y }
+  }
+}
+
+/* ════════════════════════════════
+   WAVY BAR COMPONENT
+════════════════════════════════ */
+const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
+  const uid      = useRef(`wb-${Math.random().toString(36).slice(2)}`)
+  const clipRect = useRef(null)
+  const trackDiv = useRef(null)
+  const ballRef  = useRef(null)
+
+  React.useImperativeHandle(ref, () => ({
+    clipRect: clipRect.current,
+    track:    trackDiv.current,
+    ball:     ballRef.current,
+  }))
+
+  return (
+    <div
+      ref={trackDiv}
+      style={{ width, position: 'relative', lineHeight: 0 }}
+    >
+      <svg
+        width='100%'
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio='none'
+        style={{ display: 'block', overflow: 'visible' }}
+      >
+        <defs>
+          <clipPath id={uid.current}>
+            <rect
+              ref={clipRect}
+              x='0' y='0'
+              width={W} height={H}
+              style={{ transformOrigin: 'left center' }}
+            />
+          </clipPath>
+          <linearGradient id={`grad-${uid.current}`} x1='0' y1='0' x2='1' y2='0'>
+            <stop offset='0%'   stopColor='#D2FF9A' />
+            <stop offset='100%' stopColor='rgba(210,255,154,0.5)' />
+          </linearGradient>
+          {/* glow filter for ball */}
+          <filter id={`glow-${uid.current}`} x='-50%' y='-50%' width='200%' height='200%'>
+            <feGaussianBlur stdDeviation='2.5' result='blur' />
+            <feMerge>
+              <feMergeNode in='blur' />
+              <feMergeNode in='SourceGraphic' />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* dim track wave */}
+        <path
+          d={WAVE_PATH_D}
+          fill='none'
+          stroke='rgba(255,255,255,0.1)'
+          strokeWidth='1.5'
+          strokeLinecap='round'
+        />
+
+        {/* green revealed wave */}
+        <path
+          d={WAVE_PATH_D}
+          fill='none'
+          stroke={`url(#grad-${uid.current})`}
+          strokeWidth='2'
+          strokeLinecap='round'
+          clipPath={`url(#${uid.current})`}
+        />
+
+        {/* ball — starts at left, rides the wave */}
+        <circle
+          ref={ballRef}
+          cx='0'
+          cy={CY}
+          r='4'
+          fill='#D2FF9A'
+          filter={`url(#glow-${uid.current})`}
+        />
+      </svg>
+    </div>
+  )
+})
+
+/* ════════════════════════════════
+   ANIMATE WAVY BAR HELPER
+   drives clipRect + ball together
+════════════════════════════════ */
+const animateWavyBar = (wavyRef, duration, ease, tl, insertAt) => {
+  const { clipRect, ball } = wavyRef.current
+  const sampler = getPathSampler()
+
+  /* proxy object drives both clip reveal + ball position */
+  const proxy = { p: 0 }
+
+  tl.to(proxy, {
+    p: 1,
+    duration,
+    ease,
+    onUpdate() {
+      const t   = proxy.p
+      const pos = sampler(t)
+
+      /* slide clip rect */
+      gsap.set(clipRect, { scaleX: t, transformOrigin: 'left center' })
+
+      /* move ball — convert SVG coords to percentage for preserveAspectRatio:none */
+      gsap.set(ball, { attr: { cx: pos.x, cy: pos.y } })
+    },
+  }, insertAt)
+}
+
+/* ════════════════════════════════
+   INITIAL LOADER
+════════════════════════════════ */
+const InitialLoader = ({ onComplete }) => {
   const wrapRef    = useRef(null)
   const gridRef    = useRef(null)
-  const lettersRef = useRef([])   // per-letter refs
+  const lettersRef = useRef([])
   const tagRef     = useRef(null)
   const dotRef     = useRef(null)
   const cntRef     = useRef(null)
-  const lineRef    = useRef(null)
+  const wavyRef    = useRef(null)
   const [pct, setPct] = useState(0)
 
   const LETTERS = ['D','E','V','H','O','L','I','X']
@@ -64,57 +224,42 @@ const Loader = ({ onComplete }) => {
     const tiles = Array.from(gridRef.current.querySelectorAll('.t'))
     const tl    = gsap.timeline()
 
-    /* ── tile entry — identical to original ── */
     tiles.forEach((tile, i) => {
       const col  = i % COLS
       const row  = Math.floor(i / COLS)
-      const dirs = [
-        { x:   0, y: -80 },
-        { x:   0, y:  80 },
-        { x: -80, y:   0 },
-        { x:  80, y:   0 },
-      ]
+      const dirs = [{ x: 0, y: -80 }, { x: 0, y: 80 }, { x: -80, y: 0 }, { x: 80, y: 0 }]
       const { x, y } = dirs[(col * 2 + row * 3) % 4]
       gsap.set(tile, { x, y, opacity: 0, scaleY: 1 })
     })
+
     tiles.forEach((tile, i) => {
       tl.to(tile, { x: 0, y: 0, opacity: 1, duration: 0.5, ease: 'expo.hard' }, ENTRY_DELAYS[i])
     })
 
     const ENTRY_END = MAX_ENTRY + 0.5
-
-    /* ── DEVHOLIX: letters drop in one by one with scramble ── */
     const els = lettersRef.current.filter(Boolean)
     gsap.set(els, { y: -60, opacity: 0, rotateX: -90, transformOrigin: '50% 50% -30px' })
 
     els.forEach((el, i) => {
-      tl.to(el, {
-        y: 0, opacity: 1, rotateX: 0,
-        duration: 0.55, ease: 'expo.hard',
-      }, ENTRY_END - 0.1 + i * 0.06)
-
-      /* brief glitch flash on each letter after it lands */
-      tl.to(el, {
-        color: '#D2FF9A', skewX: gsap.utils.random(-8, 8),
-        duration: 0.04, ease: 'none', yoyo: true, repeat: 3,
-      }, ENTRY_END - 0.1 + i * 0.06 + 0.55)
+      tl.to(el, { y: 0, opacity: 1, rotateX: 0, duration: 0.55, ease: 'expo.hard' },
+        ENTRY_END - 0.1 + i * 0.06)
+      tl.to(el, { color: '#D2FF9A', skewX: gsap.utils.random(-8, 8), duration: 0.04, ease: 'none', yoyo: true, repeat: 3 },
+        ENTRY_END - 0.1 + i * 0.06 + 0.55)
       tl.to(el, { color: '#fff', skewX: 0, duration: 0.06, ease: 'none' })
     })
 
+    /* show track, reset ball to start */
+    const { clipRect, ball, track } = wavyRef.current
+    gsap.set(track,    { opacity: 0 })
+    gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
+    gsap.set(ball,     { attr: { cx: 0, cy: CY } })
 
-    /* ── progress bar ── */
-    tl.fromTo(lineRef.current,
-      { scaleX: 0, opacity: 0 },
-      { scaleX: 1, opacity: 1, duration: 1.8, ease: 'power1.inOut', transformOrigin: 'left center' },
-      `<-0.1`
-    )
+    tl.to(track, { opacity: 1, duration: 0.3, ease: 'none' }, `<-0.1`)
 
-    /* ── counter ── */
-    tl.fromTo(cntRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.3, ease: 'none' },
-      `<`
-    )
+    /* ball runs along wave in sync with counter */
+    animateWavyBar(wavyRef, 1.8, 'power1.inOut', tl, `<`)
+
+    tl.fromTo(cntRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, `<`)
 
     const c = { v: 0 }
     tl.to(c, {
@@ -122,122 +267,78 @@ const Loader = ({ onComplete }) => {
       onUpdate() { setPct(Math.round(c.v)) },
     }, `<`)
 
+    tl.to({}, { duration: 0.15 })
 
+    /* track + ball fade out together */
+    tl.to(track, { opacity: 0, duration: 0.25, ease: 'power2.in' })
 
-    tl.to({}, { duration: 0.3 })
-
-    /* ── fade out content ── */
-    tl.to([...els, tagRef.current, cntRef.current, dotRef.current, lineRef.current], {
+    /* letters + counter fade out */
+    tl.to([...els, tagRef.current, cntRef.current, dotRef.current], {
       opacity: 0, y: -10, duration: 0.3, ease: 'power2.in', stagger: 0.02,
-    })
+    }, '<0.05')
 
-    /* ── tile exit — identical to original ── */
     const exitStart = tl.duration()
     tiles.forEach((tile, i) => {
       tl.to(tile, {
-        scaleY: 0, opacity: 0,
-        duration: 0.35, ease: 'tile.drop',
-        transformOrigin: 'center bottom',
+        scaleY: 0, opacity: 0, duration: 0.35,
+        ease: 'tile.drop', transformOrigin: 'center bottom',
       }, exitStart + EXIT_DELAYS[i])
     })
 
     const exitEnd = exitStart + MAX_EXIT + 0.35
     tl.to(wrap, { opacity: 0, duration: 0.2, ease: 'none' }, exitEnd)
-    tl.call(() => {
-      wrap.style.display = 'none'
-      onComplete?.()
-    })
+    tl.call(() => { wrap.style.display = 'none'; onComplete?.() })
   }, [])
 
   return (
     <div ref={wrapRef} style={{ position: 'fixed', inset: 0, zIndex: 99999, overflow: 'hidden' }}>
-
-      {/* ── tile grid — untouched ── */}
       <div ref={gridRef} style={{
-        position: 'absolute', inset: 0,
-        display: 'grid',
+        position: 'absolute', inset: 0, display: 'grid',
         gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-        gridTemplateRows:    `repeat(${ROWS}, 1fr)`,
-        gap: '1px',
+        gridTemplateRows: `repeat(${ROWS}, 1fr)`, gap: '1px',
+        background: '#000',
       }}>
         {Array.from({ length: TOTAL }, (_, i) => {
           const col = i % COLS
           const row = Math.floor(i / COLS)
-          const l   = 2 + (col + row) % 4
           return (
             <div key={i} className='t' style={{
-              background: `hsl(0,0%,${l}%)`,
+              background: `hsl(0,0%,${2 + (col + row) % 4}%)`,
               willChange: 'transform, opacity',
             }} />
           )
         })}
       </div>
 
-      {/* ── center content ── */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 2,
         display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        pointerEvents: 'none', gap: 0,
+        alignItems: 'center', justifyContent: 'center', pointerEvents: 'none',
       }}>
-
-        {/* DEVHOLIX — per-letter */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.04em', perspective: '600px' }}>
           {LETTERS.map((ch, i) => (
-            <span
-              key={i}
-              ref={el => (lettersRef.current[i] = el)}
-              style={{
-                display: 'inline-block',
-                fontSize: 'clamp(2.4rem, 7vw, 6.5rem)',
-                fontWeight: 500,
-                color: '#fff',
-                fontFamily: 'inherit',
-                lineHeight: 1,
-                opacity: 0,
-                willChange: 'transform, opacity',
-              }}
-            >
-              {ch}
-            </span>
+            <span key={i} ref={el => (lettersRef.current[i] = el)} style={{
+              display: 'inline-block', fontSize: 'clamp(2.4rem, 7vw, 6.5rem)',
+              fontWeight: 500, color: '#fff', fontFamily: 'inherit', lineHeight: 1,
+              opacity: 0, willChange: 'transform, opacity',
+            }}>{ch}</span>
           ))}
         </div>
 
-
-    
-
-        {/* progress bar */}
-        <div style={{
-          marginTop: '2.5rem',
-          width: 'clamp(120px, 18vw, 220px)',
-          height: '1px',
-          background: 'rgba(255,255,255,0.08)',
-          borderRadius: '1px',
-          overflow: 'hidden',
-          position: 'relative',
-        }}>
-          <div ref={lineRef} style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(90deg, #D2FF9A, rgba(210,255,154,0.4))',
-            transformOrigin: 'left center',
-            opacity: 0,
-          }} />
+        <div style={{ marginTop: '2.5rem', width: 'clamp(120px, 18vw, 220px)' }}>
+          <WavyBar ref={wavyRef} width='clamp(120px, 18vw, 220px)' />
         </div>
       </div>
 
-      {/* counter */}
       <div ref={cntRef} style={{
         position: 'absolute', bottom: '2rem', right: '2.2rem',
         fontFamily: 'monospace', fontWeight: 100,
-        fontSize: 'clamp(3.5rem, 8vw, 7rem)',
-        color: '#605F5F',
-        lineHeight: 1, letterSpacing: '-0.04em',
-        userSelect: 'none', opacity: 0, zIndex: 3,
+        fontSize: 'clamp(3.5rem, 8vw, 7rem)', color: '#605F5F',
+        lineHeight: 1, letterSpacing: '-0.04em', userSelect: 'none', opacity: 0, zIndex: 3,
       }}>
         {String(pct).padStart(3, '0')}
       </div>
 
-      {/* corner brackets — unchanged */}
       {[
         { top: '1.4rem',    left: '1.4rem',    r: 0   },
         { top: '1.4rem',    right: '1.4rem',   r: 90  },
@@ -246,19 +347,181 @@ const Loader = ({ onComplete }) => {
       ].map(({ r, ...s }, i) => (
         <svg key={i} width='18' height='18' viewBox='0 0 18 18'
           style={{ position: 'absolute', opacity: 0.3, zIndex: 4, transform: `rotate(${r}deg)`, ...s }}>
-          <path d='M0 18 L0 0 L18 0' stroke='#D2FF9A' strokeWidth='1' fill='none'/>
+          <path d='M0 18 L0 0 L18 0' stroke='#D2FF9A' strokeWidth='1' fill='none' />
         </svg>
       ))}
-
-  
     </div>
   )
 }
 
 /* ════════════════════════════════
-   APP
+   PAGE TRANSITION
 ════════════════════════════════ */
-const App = () => {
+const PageTransition = () => {
+  const { isTransitioning, onCovered, endTransition } = useTransition()
+  const wrapRef       = useRef(null)
+  const gridRef       = useRef(null)
+  const barWrapRef    = useRef(null)   // ← separate ref for the bar overlay
+  const wavyRef       = useRef(null)
+  const isFirstRender = useRef(true)
+
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return }
+  }, [])
+
+  useEffect(() => {
+    if (!isTransitioning) return
+
+    const wrap    = wrapRef.current
+    const barWrap = barWrapRef.current
+    const tiles   = Array.from(gridRef.current.querySelectorAll('.pt'))
+    const tl      = gsap.timeline()
+
+    wrap.style.display    = 'block'
+    wrap.style.opacity    = '1'
+    barWrap.style.opacity = '0'     // ← bar overlay completely hidden at start
+
+    const { clipRect, ball, track } = wavyRef.current
+    gsap.set(track,    { opacity: 1 })
+    gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
+    gsap.set(ball,     { attr: { cx: 0, cy: CY } })
+
+    /* ── STEP 1: all tiles fly IN ── */
+    tiles.forEach((tile, i) => {
+      const col  = i % COLS
+      const row  = Math.floor(i / COLS)
+      const dirs = [{ x: 0, y: -80 }, { x: 0, y: 80 }, { x: -80, y: 0 }, { x: 80, y: 0 }]
+      const { x, y } = dirs[(col * 2 + row * 3) % 4]
+      gsap.set(tile, { x, y, opacity: 0, scaleY: 1 })
+    })
+
+    tiles.forEach((tile, i) => {
+      tl.to(tile, { x: 0, y: 0, opacity: 1, duration: 0.5, ease: 'expo.hard' }, ENTRY_DELAYS[i])
+    })
+
+    const coveredAt = MAX_ENTRY + 0.5
+
+    /* ── STEP 2: screen fully covered → navigate + fade bar in ── */
+    tl.call(() => onCovered(), [], coveredAt)
+
+    tl.to(barWrap, { opacity: 1, duration: 0.2, ease: 'none' }, coveredAt)
+
+    /* ── STEP 3: ball runs across wave ── */
+    animateWavyBar(wavyRef, 0.5, 'power2.inOut', tl, coveredAt + 0.2)
+
+    /* ── STEP 4: bar fades out ── */
+    tl.to(barWrap, { opacity: 0, duration: 0.2, ease: 'power2.in' })
+
+    /* ── STEP 5: tiles drop OUT ── */
+    const exitStart = tl.duration()
+    tiles.forEach((tile, i) => {
+      tl.to(tile, {
+        scaleY: 0, opacity: 0, duration: 0.3,
+        ease: 'tile.drop', transformOrigin: 'center bottom',
+      }, exitStart + EXIT_DELAYS[i])
+    })
+
+    const exitEnd = exitStart + MAX_EXIT + 0.3
+    tl.to(wrap, { opacity: 0, duration: 0.15, ease: 'none' }, exitEnd)
+    tl.call(() => { wrap.style.display = 'none'; endTransition() })
+
+  }, [isTransitioning])
+
+  return (
+    <div ref={wrapRef} style={{
+      display: 'none', position: 'fixed', inset: 0, zIndex: 99998, overflow: 'hidden',
+    }}>
+      {/* tile grid — always present inside wrapRef */}
+      <div ref={gridRef} style={{
+        position: 'absolute', inset: 0, display: 'grid',
+        gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+        gridTemplateRows:    `repeat(${ROWS}, 1fr)`,
+        gap: '1px', background: '#000',
+      }}>
+        {Array.from({ length: TOTAL }, (_, i) => {
+          const col = i % COLS
+          const row = Math.floor(i / COLS)
+          return (
+            <div key={i} className='pt' style={{
+              background: `hsl(0,0%,${2 + (col + row) % 4}%)`,
+              willChange: 'transform, opacity',
+            }} />
+          )
+        })}
+      </div>
+
+      {/* bar overlay — separate from tiles, opacity controlled independently */}
+      <div ref={barWrapRef} style={{
+        position: 'absolute', inset: 0, zIndex: 2,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        pointerEvents: 'none',
+        opacity: 0,   // ← starts hidden in CSS too
+      }}>
+        <WavyBar ref={wavyRef} width='clamp(200px, 40vw, 420px)' />
+      </div>
+
+      {/* corner brackets */}
+      {[
+        { top: '1.4rem',    left: '1.4rem',    r: 0   },
+        { top: '1.4rem',    right: '1.4rem',   r: 90  },
+        { bottom: '1.4rem', left: '1.4rem',    r: -90 },
+        { bottom: '1.4rem', right: '1.4rem',   r: 180 },
+      ].map(({ r, ...s }, i) => (
+        <svg key={i} width='18' height='18' viewBox='0 0 18 18'
+          style={{ position: 'absolute', opacity: 0.3, zIndex: 4, transform: `rotate(${r}deg)`, ...s }}>
+          <path d='M0 18 L0 0 L18 0' stroke='#D2FF9A' strokeWidth='1' fill='none' />
+        </svg>
+      ))}
+    </div>
+  )
+}
+
+
+
+/* ════════════════════════════════
+   MAIN LAYOUT
+════════════════════════════════ */
+const MainLayout = ({ registerStart }) => {
+  useEffect(() => {
+    const target = window.__scrollTarget
+    if (!target) return
+    window.__scrollTarget = null
+
+    const attempt = (tries = 0) => {
+      const el = document.getElementById(target)
+      if (el) {
+        if (window.__lenis) {
+          window.__lenis.scrollTo(el, { offset: 0, duration: 1.2 })
+        } else {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      } else if (tries < 10) {
+        setTimeout(() => attempt(tries + 1), 100)
+      }
+    }
+    setTimeout(() => attempt(), 300)
+  }, [])
+
+  return (
+    <>
+      <Home registerStart={registerStart} />
+      <About />
+      <Service />
+      <Sequence />
+      <Work />
+      <Pricing />
+      <Archive />
+      <Testimonail />
+      <Faqs />
+    </>
+  )
+}
+
+/* ════════════════════════════════
+   APP INNER
+════════════════════════════════ */
+const AppInner = () => {
   const [ready, setReady] = useState(false)
   const startHomeAnim     = useRef(null)
 
@@ -268,39 +531,50 @@ const App = () => {
       easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
     })
-
+    window.__lenis = lenis
     let rafId
     const raf = time => { lenis.raf(time); rafId = requestAnimationFrame(raf) }
     rafId = requestAnimationFrame(raf)
-
-    return () => { lenis.destroy(); cancelAnimationFrame(rafId) }
+    return () => { lenis.destroy(); cancelAnimationFrame(rafId); window.__lenis = null }
   }, [])
 
   const handleLoaderDone = () => {
     setReady(true)
-    requestAnimationFrame(() => requestAnimationFrame(() => startHomeAnim.current?.()))
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      startHomeAnim.current?.()
+      window.__firstLoadDone = true
+    }))
   }
 
   return (
     <>
-      <Loader onComplete={handleLoaderDone} />
+      <InitialLoader onComplete={handleLoaderDone} />
+      <PageTransition />
       <div style={{ visibility: ready ? 'visible' : 'hidden' }}>
         <Navbar />
-        <Home    registerStart={fn => { startHomeAnim.current = fn }} />
-        <About />
-         <Service />
-        <Sequence />
-       
-        <Work/>
-        <Pricing />
-        <Archive/>
-        <Testimonail />
-        <Faqs />
-        <Contact />
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <MainLayout registerStart={fn => { startHomeAnim.current = fn }} />
+            }
+          />
+          <Route path='/book-call' element={<BookCall />} />
+          <Route path='/contact'   element={<Contact />} />
+        </Routes>
         <Footer />
       </div>
     </>
   )
 }
+
+/* ════════════════════════════════
+   APP
+════════════════════════════════ */
+const App = () => (
+  <TransitionProvider>
+    <AppInner />
+  </TransitionProvider>
+)
 
 export default App

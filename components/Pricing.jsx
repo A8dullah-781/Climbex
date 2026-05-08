@@ -1,9 +1,7 @@
-// In MagneticBtn, add onClick prop and pass it to button
-// In Pricing, add click handler that scrolls to #contact
-
 import React, { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { usePageNavigate } from '../src/hooks/usePageNavigate'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -50,6 +48,8 @@ const Pricing = () => {
   const card1Ref = useRef(null)
   const card2Ref = useRef(null)
 
+  const go = usePageNavigate()
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -60,36 +60,31 @@ const Pricing = () => {
         { autoAlpha: 0, y: 12, letterSpacing: '0.6em' },
         { autoAlpha: 1, y: 0, letterSpacing: '0.3em', duration: 0.7, ease: 'power3.out' }
       )
-
       tl.fromTo(headRef.current,
         { autoAlpha: 0, y: 48, skewY: 4 },
         { autoAlpha: 1, y: 0, skewY: 0, duration: 0.9, ease: 'expo.out' },
         '-=0.4'
       )
-
       tl.fromTo(card1Ref.current,
         { autoAlpha: 0, x: -50, y: 30 },
         { autoAlpha: 1, x: 0, y: 0, duration: 0.85, ease: 'power3.out' },
         '-=0.5'
       )
-
       tl.fromTo(card2Ref.current,
         { autoAlpha: 0, x: 50, y: 30, scale: 0.97 },
         { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' },
         '-=0.75'
       )
-
     }, secRef)
 
     return () => ctx.revert()
   }, [])
 
-  const scrollToContact = () => {
-    const contact = document.getElementById('contact')
-    if (contact) {
-      contact.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+  // Launch Pad → /contact page (with tile transition)
+  const handleLaunchNow = () => go('/contact')
+
+  // Elite Build → /book-call page (unchanged)
+  const handleBookCall = () => go('/book-call')
 
   const features1 = [
     'Built to get you online, not stuck in drafts',
@@ -119,6 +114,7 @@ const Pricing = () => {
 
       <div className="flex flex-col md:flex-row justify-center items-stretch gap-5 w-full">
 
+        {/* Launch Pad */}
         <div ref={card1Ref}
           className="flex flex-col justify-between bg-[#201F1F] rounded-3xl p-8 md:p-10 w-full md:w-1/2 lg:w-[38%]"
           style={{ minHeight: 'clamp(420px, 55vh, 560px)' }}>
@@ -144,11 +140,13 @@ const Pricing = () => {
               ))}
             </ul>
           </div>
-          <MagneticBtn onClick={scrollToContact} className="bg-white text-black hover:bg-[#B8FF4F]">
+          {/* Launch Now → /contact page */}
+          <MagneticBtn onClick={handleLaunchNow} className="bg-white text-black hover:bg-[#B8FF4F]">
             Launch Now
           </MagneticBtn>
         </div>
 
+        {/* Elite Build */}
         <div ref={card2Ref}
           className="relative flex flex-col justify-between bg-[#D2FF9A] rounded-3xl p-8 md:p-10 w-full md:w-1/2 lg:w-[38%]"
           style={{ minHeight: 'clamp(420px, 55vh, 560px)' }}>
@@ -181,7 +179,8 @@ const Pricing = () => {
             </ul>
           </div>
 
-          <MagneticBtn onClick={scrollToContact} className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
+          {/* Book a Free Call → /book-call (unchanged) */}
+          <MagneticBtn onClick={handleBookCall} className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
             Book a Free Call
           </MagneticBtn>
         </div>

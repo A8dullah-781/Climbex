@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { usePageNavigate } from '../src/hooks/usePageNavigate'
 
 const faqs = [
   {
@@ -42,19 +43,6 @@ const faqs = [
     a: "A lot. We run collaborative checkpoints at design, development, and pre-launch stages. You'll always know exactly where we are and have the chance to give feedback — you're never in the dark."
   },
 ]
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": faqs.map(({ q, a }) => ({
-    "@type": "Question",
-    "name": q,
-    "acceptedAnswer": {
-      "@type": "Answer",
-      "text": a
-    }
-  }))
-}
 
 const MagneticButton = ({ children, className, onClick }) => {
   const btnRef = useRef(null)
@@ -219,24 +207,16 @@ const Faqs = () => {
   const [open, setOpen] = useState(null)
   const [headerRef, headerInView] = useInView(0.2)
   const [ctaRef, ctaInView] = useInView(0.2)
+  const go = usePageNavigate()
 
   useEffect(() => {
-    const script = document.createElement('script')
-    script.type = 'application/ld+json'
-    script.id = 'faq-schema'
-    script.text = JSON.stringify(faqSchema)
-    const existing = document.getElementById('faq-schema')
-    if (existing) existing.remove()
-    document.head.appendChild(script)
-    return () => document.getElementById('faq-schema')?.remove()
+    const rogue = document.getElementById('faq-schema')
+    if (rogue) rogue.remove()
   }, [])
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
-  const scrollToContact = () => {
-    const contact = document.getElementById('contact')
-    if (contact) contact.scrollIntoView({ behavior: 'smooth' })
-  }
+  const handleBookCall = () => go('/book-call')
 
   return (
     <div className="w-full py-16 md:py-24 flex flex-col items-center">
@@ -323,7 +303,7 @@ const Faqs = () => {
           }}
         >
           <MagneticButton
-            onClick={scrollToContact}
+            onClick={handleBookCall}
             className="bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] w-full sm:w-auto whitespace-nowrap"
           >
             Book a Free Call

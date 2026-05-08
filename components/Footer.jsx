@@ -75,7 +75,7 @@ const Footer = () => {
       ),
     },
     {
-      label: '+92 327 1563383',
+      label: 'WhatsApp',
       href: 'https://wa.me/923271563383?text=I%E2%80%99m%20looking%20to%20build%20a%20high-impact%20digital%20presence.%20Let%E2%80%99s%20schedule%20a%20call%20and%20move%20forward%20with%20clarity.',
       icon: <FaWhatsapp size={16} />,
     },
@@ -84,7 +84,7 @@ const Footer = () => {
   return (
     <footer
       ref={footerRef}
-      className="bg-black w-full overflow-hidden"
+      className="bg-[#0d0b0b4f] w-full overflow-hidden"
       style={{ paddingLeft: '7.5vw', paddingRight: '7.5vw' }}
     >
       {/* ── Top divider ── */}
@@ -94,7 +94,7 @@ const Footer = () => {
       />
 
       {/* ── DEVHOLIX heading — SplitText matches Home exactly ── */}
-      <div className="py-10 md:py-14 overflow-hidden">
+      <div className="py-10 md:py-6 overflow-hidden">
         <h1
           ref={titleRef}
           className="robo font-black text-white leading-none select-none"
@@ -109,7 +109,7 @@ const Footer = () => {
 
       {/* ── Bottom row ── */}
       <div
-        className="pb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
+        className="pb-8 md:pb-16 flex flex-col sm:flex-row sm:items-end justify-between gap-8"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? 'translateY(0)' : 'translateY(20px)',
@@ -118,7 +118,6 @@ const Footer = () => {
         }}
       >
         <div className="flex flex-col gap-3">
-          <span className="robo text-[#c8f135] text-[10px] tracking-widest">NAV_CLUSTER</span>
           <div className="flex flex-wrap gap-x-6 gap-y-3">
             {links.map((link, i) => (
               <a
@@ -150,9 +149,9 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col items-start sm:items-end gap-1">
-          <span className="robo text-gray-600 text-[10px] tracking-widest">VER_STABLE_001</span>
-          <span className="robo text-gray-600 text-[10px] tracking-widest">
-            ©2025 DEVHOLIX ARCHIVE. ALL RIGHTS RESERVED.
+          <span className="robo txtgray text-[10px] tracking-widest">VER_STABLE_001</span>
+          <span className="robo txtgray text-[10px] tracking-widest">
+            ©2026 DEVHOLIX. ALL RIGHTS RESERVED.
           </span>
         </div>
       </div>

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ── Favicon ── -->
-    <link rel="icon" type="image/png" href="/devholixLogo.webp" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/devholixLogo.webp" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/devholixLogo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/devholixLogo.png" />
     <meta name="theme-color" content="#111110" />
 
     <!-- ── Primary SEO ── -->
@@ -32,13 +32,6 @@
     <meta name="twitter:description" content="We curate digital experiences at the intersection of mathematical precision and artistic rebellion. Elite engineering for the bold." />
     <meta name="twitter:image" content="https://devholix.com/og-image.jpg" />
 
-    <!--
-      ── FONTS (CRITICAL — do NOT use @import in CSS) ──
-      1. preconnect opens the socket to Google early, saving ~200ms RTT
-      2. Both fonts combined in ONE <link> = one request instead of two
-      3. display=swap prevents render-blocking — text shows in fallback font
-         while the custom font loads, then swaps in seamlessly
-    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -68,40 +61,6 @@
     }
     </script>
 
-    <!-- ── JSON-LD: FAQPage (Google rich snippets) ── -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is the average build time?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Most projects are delivered within 2–4 weeks. Launch Pad ships in 10–14 days. Elite Builds may take 3–6 weeks." }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you offer post-launch maintenance?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. We offer ongoing retainer packages for updates, performance monitoring, and feature additions." }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I get started?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Book a free discovery call. We'll understand your goals and propose the right engagement." }
-        },
-        {
-          "@type": "Question",
-          "name": "Will my website be mobile responsive?",
-          "acceptedAnswer": { "@type": "Answer", "text": "100%. Every build is fully responsive across all devices and screen sizes." }
-        },
-        {
-          "@type": "Question",
-          "name": "How do payments work?",
-          "acceptedAnswer": { "@type": "Answer", "text": "50% upfront to begin, 50% on delivery. Elite Builds can use a three-stage payment schedule." }
-        }
-      ]
-    }
-    </script>
   </head>
   <body>
     <div id="root"></div>

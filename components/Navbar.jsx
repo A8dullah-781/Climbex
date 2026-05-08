@@ -1,32 +1,67 @@
 import React, { useState, useRef, useEffect } from 'react'
 import gsap from 'gsap'
+import { useLocation } from 'react-router-dom'
+import { usePageNavigate } from '../src/hooks/usePageNavigate'
 
 const links = [
-  { label: 'Archive',     id: 'archive'     },
+  { label: 'Home',     id: 'home'    },
+  { label: 'Projects', id: 'archive' },
   { label: 'Services', id: 'service' },
-  { label: 'About',    id: 'about'    },
-  { label: 'Contact',    id: 'contact'    },
+  { label: 'About',    id: 'about'   },
+  { label: 'Contact',  id: 'contact', page: '/contact' }, // ← has a page route
 ]
 
 const Navbar = () => {
   const [activeLink, setActiveLink] = useState(null)
   const [menuOpen, setMenuOpen]     = useState(false)
+  const go                          = usePageNavigate()
+  const location                    = useLocation()
+  const isHome                      = location.pathname === '/'
 
-  const navRef          = useRef(null)
-  const mobileMenuRef   = useRef(null)
-  const mobileItemRefs  = useRef([])
-  const mobileCTARef    = useRef(null)
-  const lastScroll      = useRef(0)
+  const navRef         = useRef(null)
+  const mobileMenuRef  = useRef(null)
+  const mobileItemRefs = useRef([])
+  const mobileCTARef   = useRef(null)
+  const lastScroll     = useRef(0)
 
   const scrollTo = (id) => {
-  const el = document.getElementById(id)
-  if (!el) return
-  if (window.__lenis) {
-    window.__lenis.scrollTo(el, { offset: 0, duration: 1.2 })
-  } else {
-    el.scrollIntoView({ behavior: 'smooth' })
+    const el = document.getElementById(id)
+    if (!el) return
+    if (window.__lenis) {
+      window.__lenis.scrollTo(el, { offset: 0, duration: 1.2 })
+    } else {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
   }
-}
+
+  const handleNavLink = (link) => {
+    setActiveLink(link.label)
+    setMenuOpen(false)
+
+    // Contact → always navigate to /contact page
+    if (link.page) {
+      go(link.page)
+      return
+    }
+
+    if (isHome) {
+      // Already on home: just scroll to section
+      scrollTo(link.id)
+    } else {
+      // On any other page: tile transition → go home → scroll to section
+      go('/', link.id)
+    }
+  }
+
+  // START PROJECT → scroll to #pricing on home, or navigate home then scroll
+  const handleStartProject = () => {
+    setMenuOpen(false)
+    if (isHome) {
+      scrollTo('pricing')
+    } else {
+      go('/', 'pricing')
+    }
+  }
 
   /* ── hide/show on scroll ── */
   useEffect(() => {
@@ -76,10 +111,13 @@ const Navbar = () => {
   return (
     <div
       ref={navRef}
-      className='fixed bg-[#171616] top-0 left-0 w-screen z-50 h-[10vh] px-[2vw] flex flex-row justify-between items-center'
+      className='fixed top-0 left-0 w-screen z-50 h-[10vh] px-[2vw] flex flex-row justify-between items-center backdrop-blur-md bg-[#171616]/5 border-b border-white/5'
     >
       {/* Brand */}
-      <div className='fontone font-bold text-white text-[5vw] pr-4 lg:pr-0 lg:text-[1.3vw] cursor-default select-none'>
+      <div
+        onClick={() => handleNavLink({ label: 'Home', id: 'home' })}
+        className='fontone font-bold text-white text-[5vw] pr-4 lg:pr-0 lg:text-[1.3vw] cursor-pointer select-none'
+      >
         Devholix
         <span className='inline-block w-[6px] h-[6px] bg-[#D2FF9A] rounded-full ml-[2px] mb-[2px] align-middle animate-pulse' />
       </div>
@@ -89,7 +127,7 @@ const Navbar = () => {
         {links.map(link => (
           <div
             key={link.label}
-            onClick={() => { setActiveLink(link.label); scrollTo(link.id) }}
+            onClick={() => handleNavLink(link)}
             className={`relative cursor-pointer pb-1 overflow-hidden group ${activeLink === link.label ? 'text-[#D2FF9A]' : 'txtgray'}`}
           >
             <span className='block md:transition-none md:group-hover:translate-y-0 lg:transition-transform lg:duration-300 lg:ease-out lg:group-hover:-translate-y-full transition-transform duration-300 ease-out group-hover:-translate-y-full'>
@@ -103,9 +141,9 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Desktop CTA */}
+      {/* Desktop CTA — now scrolls to pricing */}
       <div
-        onClick={() => scrollTo('pricing')}
+        onClick={handleStartProject}
         className='hidden md:block robo text-black text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'
       >
         <span className='relative z-10 transition-colors duration-300 mt-0.5 group-hover:text-black'>START PROJECT</span>
@@ -134,7 +172,7 @@ const Navbar = () => {
             <div
               key={link.label}
               ref={el => (mobileItemRefs.current[i] = el)}
-              onClick={() => { setActiveLink(link.label); scrollTo(link.id); setTimeout(() => setMenuOpen(false), 200) }}
+              onClick={() => handleNavLink(link)}
               className={`flex items-center justify-between py-4 cursor-pointer robo uppercase text-[3vw] tracking-widest border-b border-white/5 transition-all duration-200 hover:text-[#D2FF9A] hover:pl-3 ${activeLink === link.label ? 'text-[#D2FF9A] pl-3' : 'txtgray'}`}
             >
               {link.label}
@@ -143,7 +181,7 @@ const Navbar = () => {
           ))}
           <button
             ref={mobileCTARef}
-            onClick={() => { scrollTo('pricing'); setTimeout(() => setMenuOpen(false), 200) }}
+            onClick={handleStartProject}
             className='robo uppercase tracking-widest text-[2.5vw] rounded-3xl px-6 py-3 mt-4 w-full bgwhite text-black relative overflow-hidden group cursor-pointer'
           >
             <span className='relative z-10 transition-colors duration-300 group-hover:text-black'>START PROJECT</span>

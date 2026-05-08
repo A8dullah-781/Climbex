@@ -1,6 +1,3 @@
 User-agent: *
-   Allow: /
-   Sitemap: https://devholix.com/sitemap.xml
-
-
-     
+Allow: /
+Sitemap: https://devholix.com/sitemap.xml
