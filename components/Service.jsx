@@ -86,8 +86,7 @@ const Service = () => {
             CORE SERVICES
           </div>
           <div className="s-sub robo txtgray text-[clamp(0.7rem,1.2vw,1rem)] sm:w-[40vw] sm:text-right leading-relaxed">
-            We don't just build sites. We engineer digital assets that command
-            attention and drive conversion through technical excellence.
+            We don't just build sites. We build digital assets that work hard for your business 24/7.
           </div>
         </div>
       </div>
@@ -126,8 +125,7 @@ const Service = () => {
             </div>
           </div>
           <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed mt-4">
-            Editorial-grade aesthetics meeting friction-less user journeys. We
-            design for the elite.
+            Clean, premium design that guides your visitors exactly where you want them to go.
           </div>
         </div>
 
@@ -197,8 +195,7 @@ const Service = () => {
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 mt-2">
             <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed sm:max-w-[45%]">
-              Lighthouse scores are our obsession. We optimize every
-              millisecond of the critical rendering path.
+             Every site we ship scores 90+ on Lighthouse. Speed isn't optional, it's the standard.
             </div>
             <div className="s-img">
               <img
@@ -234,8 +231,7 @@ const Service = () => {
             Deployment
           </div>
           <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed mt-2">
-            High-performance deployment setup for smooth, stable, and globally
-            accessible websites.
+            We handle hosting setup, domain, and go-live. You don't touch a thing.
           </div>
         </div>
       </div>

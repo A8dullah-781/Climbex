@@ -87,16 +87,16 @@ const Pricing = () => {
   const handleBookCall = () => go('/book-call')
 
   const features1 = [
-    'Built to get you online, not stuck in drafts',
+    'Launched in 10–14 days',
     'Sharp design that actually converts',
-    "Speed that doesn't kill your visitors",
-    'Everything ready. Just hit launch',
+    "Lighthouse 90+ performance",
+    'Fully responsive on all devices',
   ]
   const features2 = [
-    'Crafted from scratch, not recycled templates',
-    'Every detail designed to dominate your niche',
-    'Performance that scales with your ambition',
-    'You imagine it. We engineer it',
+    'Built from scratch, nothing recycled',
+    'Custom design system for your brand',
+    'Performance built to scale',
+    'Ongoing support available',
   ]
 
   return (

@@ -5,6 +5,7 @@ import { CustomEase } from 'gsap/CustomEase'
 import Lenis from '@studio-freight/lenis'
 
 import { TransitionProvider, useTransition } from '../src/context/TransitionContext'
+import Scrolltotop from '../components/Scrolltotop'
 
 import Navbar      from '../components/Navbar'
 import Home        from '../components/Home'
@@ -54,8 +55,8 @@ const MAX_EXIT  = Math.max(...EXIT_DELAYS)
 const W   = 400
 const H   = 32
 const CY  = H / 2
-const AMP = 9      // wave height — bigger = more dramatic like your reference
-const SEG = 40     // wave period width
+const AMP = 9
+const SEG = 40
 
 const buildWavePath = () => {
   const steps = W / SEG
@@ -72,10 +73,6 @@ const buildWavePath = () => {
 
 const WAVE_PATH_D = buildWavePath()
 
-/* 
-  Pre-compute ball position by sampling the SVG path at t=0..1
-  We do this at runtime using a hidden SVGPathElement 
-*/
 const getPathSampler = () => {
   if (typeof document === 'undefined') return () => ({ x: 0, y: CY })
   const svg  = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -97,7 +94,7 @@ const getPathSampler = () => {
 /* ════════════════════════════════
    WAVY BAR COMPONENT
 ════════════════════════════════ */
-const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
+const WavyBar = React.forwardRef(({ width = '400px', initiallyHidden = false }, ref) => {
   const uid      = useRef(`wb-${Math.random().toString(36).slice(2)}`)
   const clipRect = useRef(null)
   const trackDiv = useRef(null)
@@ -112,7 +109,8 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
   return (
     <div
       ref={trackDiv}
-      style={{ width, position: 'relative', lineHeight: 0 }}
+      // FIX: hide from first paint when initiallyHidden=true so no flash before GSAP runs
+      style={{ width, position: 'relative', lineHeight: 0, opacity: initiallyHidden ? 0 : 1 }}
     >
       <svg
         width='100%'
@@ -133,7 +131,6 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
             <stop offset='0%'   stopColor='#D2FF9A' />
             <stop offset='100%' stopColor='rgba(210,255,154,0.5)' />
           </linearGradient>
-          {/* glow filter for ball */}
           <filter id={`glow-${uid.current}`} x='-50%' y='-50%' width='200%' height='200%'>
             <feGaussianBlur stdDeviation='2.5' result='blur' />
             <feMerge>
@@ -143,7 +140,6 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
           </filter>
         </defs>
 
-        {/* dim track wave */}
         <path
           d={WAVE_PATH_D}
           fill='none'
@@ -152,7 +148,6 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
           strokeLinecap='round'
         />
 
-        {/* green revealed wave */}
         <path
           d={WAVE_PATH_D}
           fill='none'
@@ -162,7 +157,6 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
           clipPath={`url(#${uid.current})`}
         />
 
-        {/* ball — starts at left, rides the wave */}
         <circle
           ref={ballRef}
           cx='0'
@@ -178,13 +172,11 @@ const WavyBar = React.forwardRef(({ width = '400px' }, ref) => {
 
 /* ════════════════════════════════
    ANIMATE WAVY BAR HELPER
-   drives clipRect + ball together
 ════════════════════════════════ */
 const animateWavyBar = (wavyRef, duration, ease, tl, insertAt) => {
   const { clipRect, ball } = wavyRef.current
   const sampler = getPathSampler()
 
-  /* proxy object drives both clip reveal + ball position */
   const proxy = { p: 0 }
 
   tl.to(proxy, {
@@ -194,11 +186,7 @@ const animateWavyBar = (wavyRef, duration, ease, tl, insertAt) => {
     onUpdate() {
       const t   = proxy.p
       const pos = sampler(t)
-
-      /* slide clip rect */
       gsap.set(clipRect, { scaleX: t, transformOrigin: 'left center' })
-
-      /* move ball — convert SVG coords to percentage for preserveAspectRatio:none */
       gsap.set(ball, { attr: { cx: pos.x, cy: pos.y } })
     },
   }, insertAt)
@@ -248,15 +236,14 @@ const InitialLoader = ({ onComplete }) => {
       tl.to(el, { color: '#fff', skewX: 0, duration: 0.06, ease: 'none' })
     })
 
-    /* show track, reset ball to start */
+    // FIX: clipRect and ball reset before fade-in — track is already opacity:0 from inline style
     const { clipRect, ball, track } = wavyRef.current
-    gsap.set(track,    { opacity: 0 })
     gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
     gsap.set(ball,     { attr: { cx: 0, cy: CY } })
 
+    // Now fade the track in (it starts at opacity:0 from the initiallyHidden prop)
     tl.to(track, { opacity: 1, duration: 0.3, ease: 'none' }, `<-0.1`)
 
-    /* ball runs along wave in sync with counter */
     animateWavyBar(wavyRef, 1.8, 'power1.inOut', tl, `<`)
 
     tl.fromTo(cntRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, `<`)
@@ -269,10 +256,8 @@ const InitialLoader = ({ onComplete }) => {
 
     tl.to({}, { duration: 0.15 })
 
-    /* track + ball fade out together */
     tl.to(track, { opacity: 0, duration: 0.25, ease: 'power2.in' })
 
-    /* letters + counter fade out */
     tl.to([...els, tagRef.current, cntRef.current, dotRef.current], {
       opacity: 0, y: -10, duration: 0.3, ease: 'power2.in', stagger: 0.02,
     }, '<0.05')
@@ -326,7 +311,8 @@ const InitialLoader = ({ onComplete }) => {
         </div>
 
         <div style={{ marginTop: '2.5rem', width: 'clamp(120px, 18vw, 220px)' }}>
-          <WavyBar ref={wavyRef} width='clamp(120px, 18vw, 220px)' />
+          {/* FIX: initiallyHidden=true so opacity:0 is set before first paint */}
+          <WavyBar ref={wavyRef} width='clamp(120px, 18vw, 220px)' initiallyHidden={true} />
         </div>
       </div>
 
@@ -361,7 +347,7 @@ const PageTransition = () => {
   const { isTransitioning, onCovered, endTransition } = useTransition()
   const wrapRef       = useRef(null)
   const gridRef       = useRef(null)
-  const barWrapRef    = useRef(null)   // ← separate ref for the bar overlay
+  const barWrapRef    = useRef(null)
   const wavyRef       = useRef(null)
   const isFirstRender = useRef(true)
 
@@ -379,14 +365,13 @@ const PageTransition = () => {
 
     wrap.style.display    = 'block'
     wrap.style.opacity    = '1'
-    barWrap.style.opacity = '0'     // ← bar overlay completely hidden at start
+    barWrap.style.opacity = '0'
 
     const { clipRect, ball, track } = wavyRef.current
     gsap.set(track,    { opacity: 1 })
     gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
     gsap.set(ball,     { attr: { cx: 0, cy: CY } })
 
-    /* ── STEP 1: all tiles fly IN ── */
     tiles.forEach((tile, i) => {
       const col  = i % COLS
       const row  = Math.floor(i / COLS)
@@ -401,18 +386,13 @@ const PageTransition = () => {
 
     const coveredAt = MAX_ENTRY + 0.5
 
-    /* ── STEP 2: screen fully covered → navigate + fade bar in ── */
     tl.call(() => onCovered(), [], coveredAt)
-
     tl.to(barWrap, { opacity: 1, duration: 0.2, ease: 'none' }, coveredAt)
 
-    /* ── STEP 3: ball runs across wave ── */
     animateWavyBar(wavyRef, 0.5, 'power2.inOut', tl, coveredAt + 0.2)
 
-    /* ── STEP 4: bar fades out ── */
     tl.to(barWrap, { opacity: 0, duration: 0.2, ease: 'power2.in' })
 
-    /* ── STEP 5: tiles drop OUT ── */
     const exitStart = tl.duration()
     tiles.forEach((tile, i) => {
       tl.to(tile, {
@@ -431,7 +411,6 @@ const PageTransition = () => {
     <div ref={wrapRef} style={{
       display: 'none', position: 'fixed', inset: 0, zIndex: 99998, overflow: 'hidden',
     }}>
-      {/* tile grid — always present inside wrapRef */}
       <div ref={gridRef} style={{
         position: 'absolute', inset: 0, display: 'grid',
         gridTemplateColumns: `repeat(${COLS}, 1fr)`,
@@ -450,18 +429,16 @@ const PageTransition = () => {
         })}
       </div>
 
-      {/* bar overlay — separate from tiles, opacity controlled independently */}
       <div ref={barWrapRef} style={{
         position: 'absolute', inset: 0, zIndex: 2,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         pointerEvents: 'none',
-        opacity: 0,   // ← starts hidden in CSS too
+        opacity: 0,
       }}>
         <WavyBar ref={wavyRef} width='clamp(200px, 40vw, 420px)' />
       </div>
 
-      {/* corner brackets */}
       {[
         { top: '1.4rem',    left: '1.4rem',    r: 0   },
         { top: '1.4rem',    right: '1.4rem',   r: 90  },
@@ -476,8 +453,6 @@ const PageTransition = () => {
     </div>
   )
 }
-
-
 
 /* ════════════════════════════════
    MAIN LAYOUT
@@ -550,6 +525,7 @@ const AppInner = () => {
     <>
       <InitialLoader onComplete={handleLoaderDone} />
       <PageTransition />
+       <Scrolltotop />  
       <div style={{ visibility: ready ? 'visible' : 'hidden' }}>
         <Navbar />
         <Routes>

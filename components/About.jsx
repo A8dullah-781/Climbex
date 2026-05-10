@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const lines = [
-  { label: "WHO", text: "We operate where precision meets intent. Led by Abdullah, the agency isn't built on roles, it's built on standards. A controlled mindset shaping every decision, where nothing is random and nothing is left to chance." },
-  { label: "WHAT", text: "We construct digital presence that feels inevitable. Interfaces engineered to hold attention, systems designed to perform, visuals that don't decorate, they dominate." },
-  { label: "HOW", text: "Through calculated design and disciplined execution. Every pixel measured, every interaction deliberate. No noise, no excess, just refined output driven by clarity and control." },
-  { label: "WHY", text: "Because most of the digital world is built to fill space, not to hold attention. Predictable layouts, safe decisions, zero intent. This exists to challenge that — to create work that carries weight, commands focus, and stays long after everything else is forgotten." },
+  { label: "WHO", text: "Devholix is led by Abdullah Farooq — a web developer focused on quality over quantity. We work with a small number of clients at a time so every project gets the attention it deserves." },
+  { label: "WHAT", text: "We build complete websites from scratch — design, development, performance, and deployment. No templates, no outsourcing, no shortcuts. Just clean work delivered on time." },
+  { label: "HOW", text: "Every project follows a clear process — discovery, design approval, build, then launch. You always know where we are. No surprises, no delays, no chasing us for updates." },
+  { label: "WHY", text: "Most business websites look fine but do nothing. They don't convert, and they don't represent the quality of the business behind them. We build websites that actually work." },
 ];
-
 const HEADING = ["BUILT TO", "OUTLAST", "THE NOISE."];
 
 const useReveal = (threshold = 0.1) => {
@@ -24,10 +23,32 @@ const useReveal = (threshold = 0.1) => {
   return [ref, visible];
 };
 
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : false
+  );
+  useEffect(() => {
+    const handler = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isDesktop;
+};
+
 const About = () => {
   const [ref, visible] = useReveal();
   const [activeIndex, setActiveIndex] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const isDesktop = useIsDesktop();
+
+  // Desktop: hover expands. Mobile/tablet: click expands.
+  const isExpanded = (i) => isDesktop ? hoveredIndex === i : activeIndex === i;
+
+  const handleClick = (i) => {
+    if (!isDesktop) {
+      setActiveIndex(activeIndex === i ? null : i);
+    }
+  };
 
   return (
     <section id="about" ref={ref} className="px-[7.5vw] py-20 lg:py-28 overflow-hidden relative">
@@ -78,17 +99,17 @@ const About = () => {
       {/* Accordion */}
       <div>
         {lines.map((item, i) => {
-          const isActive = activeIndex === i;
+          const expanded = isExpanded(i);
           const isHovered = hoveredIndex === i;
-          const accent = isActive || isHovered;
+          const accent = expanded || isHovered;
           const delay = 320 + i * 110;
 
           return (
             <div key={i}
-              onClick={() => setActiveIndex(isActive ? null : i)}
+              onClick={() => handleClick(i)}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className="cursor-pointer"
+              className={isDesktop ? "cursor-default" : "cursor-pointer"}
               style={{
                 position: "relative",
                 transition: `opacity .65s ease ${delay}ms, transform .65s cubic-bezier(.16,1,.3,1) ${delay}ms`,
@@ -100,7 +121,7 @@ const About = () => {
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "1px", overflow: "hidden" }}>
                 <div style={{
                   position: "absolute", inset: 0,
-                  background: isActive ? "rgba(180,255,60,0.25)" : isHovered ? "rgba(180,255,60,0.12)" : "rgba(255,255,255,0.07)",
+                  background: expanded ? "rgba(180,255,60,0.25)" : isHovered ? "rgba(180,255,60,0.12)" : "rgba(255,255,255,0.07)",
                   transformOrigin: "left center",
                   transition: `background .35s ease, transform .9s cubic-bezier(.16,1,.3,1) ${delay}ms`,
                   transform: visible ? "scaleX(1)" : "scaleX(0)",
@@ -117,16 +138,16 @@ const About = () => {
                     style={{
                       color: accent ? "#b4ff3c" : "rgba(255,255,255,0.12)",
                       transition: "color .3s ease, letter-spacing .4s cubic-bezier(.16,1,.3,1)",
-                      letterSpacing: isHovered && !isActive ? "0.04em" : "-0.01em",
+                      letterSpacing: isHovered && !expanded ? "0.04em" : "-0.01em",
                     }}>
                     {item.label}
                   </span>
 
                   <div style={{
                     display: "grid",
-                    gridTemplateRows: isActive ? "1fr" : "0fr",
-                    opacity: isActive ? 1 : 0,
-                    marginTop: isActive ? "12px" : "0px",
+                    gridTemplateRows: expanded ? "1fr" : "0fr",
+                    opacity: expanded ? 1 : 0,
+                    marginTop: expanded ? "12px" : "0px",
                     transition: "grid-template-rows .52s cubic-bezier(.16,1,.3,1), opacity .38s ease, margin-top .38s ease",
                   }}>
                     <div style={{ overflow: "hidden" }}>
@@ -140,8 +161,8 @@ const About = () => {
                 <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-full border flex items-center justify-center flex-shrink-0 mt-1 lg:mt-2"
                   style={{
                     borderColor: accent ? "#b4ff3c" : "rgba(255,255,255,0.1)",
-                    background: isActive ? "rgba(180,255,60,0.08)" : "transparent",
-                    transform: isActive ? "rotate(45deg)" : "rotate(0deg)",
+                    background: expanded ? "rgba(180,255,60,0.08)" : "transparent",
+                    transform: expanded ? "rotate(45deg)" : "rotate(0deg)",
                     transition: "border-color .3s ease, background .3s ease, transform .42s cubic-bezier(.16,1,.3,1)",
                   }}>
                   <svg viewBox="0 0 10 10" fill="none" stroke="#b4ff3c" strokeWidth="1.5" className="w-[9px] h-[9px]">

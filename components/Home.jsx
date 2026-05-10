@@ -140,7 +140,7 @@ const Home = ({ registerStart }) => {
 
           <div ref={tagRef} className='robo text-[3vw] sm:text-[2vw] md:text-[1.2vw] lg:text-[1vw] flex flex-row justify-center items-center gap-2 sm:gap-5 flex-wrap mb-5 lg:mb-0'>
             <div data-hover className='txtgreen bg-[#D2FF9A]/10 py-1 px-4 rounded-3xl border border-[#D2FF9A]/20 cursor-default'>
-              V1.0 // ARCHITECTURE
+              V1.0 // WEB AGENCY 
             </div>
             <div className='txtdgray hidden sm:block'>---------</div>
             <div className='txtblue tracking-[0.1em]'>EST . 2026</div>
@@ -155,9 +155,9 @@ const Home = ({ registerStart }) => {
           </div>
 
           <div ref={descRef} className='txtgray text-[3.5vw] sm:text-[2vw] md:text-[1.4vw] lg:text-[1.2vw] text-center py-4 px-4'>
-            We curate digital experiences at the intersection of mathematical{' '}
+            We build fast, high-end websites for UK and US businesses {' '}
             <br className='hidden md:block' />
-            precision and artistic rebellion. Elite engineering for the bold.
+           that want to look as good as they actually are.
           </div>
 
           <div ref={btnsRowRef} className='flex justify-center items-center gap-4 sm:gap-8 py-4 robo flex-wrap'>

@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 const steps = [
   {
     num: "01",
-    name: "Ingestion",
-    desc: "Deep-dive technical discovery. We extract requirements through rigorous interrogation of business goals and user constraints.",
+    name: "Discovery",
+    desc: "We start by understanding your business, your clients, and what your website needs to do. No assumptions, just the right questions. Goals / Audience / Scope",
     tags: [
       { label: "Analysis", color: "acc" },
       { label: "Mapping" },
@@ -13,8 +13,8 @@ const steps = [
   },
   {
     num: "02",
-    name: "Synthesis",
-    desc: "Architectural blueprinting. Design and technical logic are fused into a singular coherent structural vision.",
+    name: "Design",
+    desc: "We design the full layout and visual system before writing a single line of code. You see it, approve it, then we build it. Wireframes / UI Design / Approval",
     tags: [
       { label: "Wireframes" },
       { label: "UI Filing", color: "bl" },
@@ -23,8 +23,8 @@ const steps = [
   },
   {
     num: "03",
-    name: "Construction",
-    desc: "Precision engineering. The system is built with modular components, performance-first logic, and extreme hardening.",
+    name: "Build",
+    desc: "Clean, fast, production-ready code. Built with React, tested across all devices, optimized for performance from day one. Development / Testing / Optimization",
     tags: [
       { label: "Coding", color: "acc" },
       { label: "Testing" },
@@ -33,8 +33,8 @@ const steps = [
   },
   {
     num: "04",
-    name: "Broadcast",
-    desc: "Deployment and scaling. We release the protocol into the wild, monitoring performance with surgical precision.",
+    name: "Launch",
+    desc: "We handle deployment, final checks, and go-live. After launch, you get a full handoff so you're never dependent on us to make basic updates. Deployment / Handoff / Support",
     tags: [
       { label: "Launch" },
       { label: "Scale", color: "bl" },
@@ -104,7 +104,7 @@ export default function Sequence() {
     if (!el) return;
     const num = el.querySelector(".step-num");
     const tags = el.querySelectorAll(".step-tag");
-    if (num) num.style.color = entering ? "#D2FF9A" : "#1e1e1e";
+    if (num) num.style.color = entering ? "#D2FF9A" : "";
     tags.forEach((tag) => {
       const c = tag.dataset.color;
       tag.style.color = entering ? tagHoverColor[c || "default"] : tagColor[c || "default"];
@@ -112,9 +112,9 @@ export default function Sequence() {
   };
 
   return (
-    <section className="mt-12  h-full md:mt-0"
+    <section
+      className="mt-12 h-full md:mt-0"
       style={{
-        
         padding: "clamp(32px, 6vw, 80px) clamp(20px, 7.5vw, 100px)",
         fontFamily: "'Roboto Mono', monospace",
         boxSizing: "border-box",
@@ -130,7 +130,8 @@ export default function Sequence() {
           transition: "opacity 0.5s ease, transform 0.5s ease",
         }}
       >
-        <p className="text-xs"
+        <p
+          className="text-xs"
           style={{
             color: "#9592FF",
             textTransform: "uppercase",
@@ -139,7 +140,8 @@ export default function Sequence() {
         >
           Execution Protocol
         </p>
-        <h1 className="fontone"
+        <h1
+          className="fontone"
           style={{
             fontWeight: 900,
             fontSize: "clamp(32px, 7vw, 80px)",
@@ -191,9 +193,9 @@ export default function Sequence() {
               }}
             />
 
-            {/* Number */}
-            <div className="robo txtgreen"
-              className="step-num"
+            {/* Number — gray by default, turns green on hover via handleStepHover */}
+            <div
+              className="step-num robo txtgray"
               style={{
                 fontWeight: 800,
                 fontSize: "clamp(24px, 4.5vw, 56px)",
@@ -208,7 +210,8 @@ export default function Sequence() {
 
             {/* Info */}
             <div>
-              <div className="robo txtwhite uppercase"
+              <div
+                className="robo txtwhite uppercase"
                 style={{
                   fontWeight: 700,
                   fontSize: "clamp(14px, 1.8vw, 22px)",
@@ -218,7 +221,8 @@ export default function Sequence() {
               >
                 {step.name}
               </div>
-              <div className="robo text-md txtgray "
+              <div
+                className="robo text-md txtgray"
                 style={{
                   lineHeight: 1.65,
                   maxWidth: 360,
@@ -229,7 +233,8 @@ export default function Sequence() {
             </div>
 
             {/* Tags */}
-            <div className="hidden md:flex"
+            <div
+              className="hidden md:flex"
               style={{
                 alignItems: "center",
                 flexShrink: 0,
@@ -241,7 +246,7 @@ export default function Sequence() {
                     className="step-tag"
                     data-color={tag.color || ""}
                     style={{
-                      fontSize: "clamp(7px, 0.75vw, 10px)",
+                      fontSize: "clamp(10px, 0.75vw, 14px)",
                       letterSpacing: "0.18em",
                       textTransform: "uppercase",
                       color: tag.color ? tagColor[tag.color] + "55" : tagColor.default,

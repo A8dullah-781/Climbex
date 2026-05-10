@@ -11,7 +11,7 @@ const PROJECTS = [
     sub: 'Interior Studio',
     buildId: '#LN-0114-AR',
     img: '/images/linea.webp',
-    index: '02 / 03',
+    index: '01 / 03',
     url: 'https://linea-architects.vercel.app/',
   },
   {
@@ -20,7 +20,7 @@ const PROJECTS = [
     sub: 'Interior Studio',
     buildId: '#V-004-B2',
     img: '/images/void.webp',
-    index: '01 / 03',
+    index: '02 / 03',
     url: 'https://studio-void.vercel.app/',
   },
   {

@@ -240,7 +240,7 @@ const Faqs = () => {
             transition: 'opacity 0.7s ease 0.2s, transform 0.7s cubic-bezier(0.23,1,0.32,1) 0.2s',
           }}
         >
-          Inquiry Archive
+         COMMON QUESTIONS
         </h2>
         <p
           className="txtgray robo text-sm mt-4 max-w-md mx-auto leading-relaxed"
@@ -287,7 +287,7 @@ const Faqs = () => {
             Still have questions?
           </p>
           <h3 className="text-[#0f0f0f] fontone font-black uppercase text-2xl sm:text-3xl leading-tight">
-            Let's talk it through.
+           Ready to build something that actually works?
           </h3>
           <p className="text-[#3a3a3a] robo text-xs sm:text-sm mt-2 max-w-xs leading-relaxed">
             No pitch. No pressure. Just a real conversation about your project.
