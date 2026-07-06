@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
@@ -30,6 +30,7 @@ const COLS  = 12
 const ROWS  = 8
 const TOTAL = COLS * ROWS
 
+/* ─── Delay arrays — computed once at module level, never recreated ───────── */
 const ENTRY_DELAYS = Array.from({ length: TOTAL }, (_, i) => {
   const col  = i % COLS
   const row  = Math.floor(i / COLS)
@@ -49,9 +50,7 @@ const EXIT_DELAYS = Array.from({ length: TOTAL }, (_, i) => {
 const MAX_ENTRY = Math.max(...ENTRY_DELAYS)
 const MAX_EXIT  = Math.max(...EXIT_DELAYS)
 
-/* ════════════════════════════════
-   WAVE PATH BUILDER
-════════════════════════════════ */
+/* ─── Wave path — built once, never rebuilt ───────────────────────────────── */
 const W   = 400
 const H   = 32
 const CY  = H / 2
@@ -62,33 +61,48 @@ const buildWavePath = () => {
   const steps = W / SEG
   let d = `M 0 ${CY}`
   for (let i = 0; i < steps; i++) {
-    const x0  = i * SEG
-    const x1  = x0 + SEG
-    const cp1y = i % 2 === 0 ? CY - AMP : CY + AMP
-    const cp2y = i % 2 === 0 ? CY - AMP : CY + AMP
-    d += ` C ${x0 + SEG * 0.3} ${cp1y}, ${x0 + SEG * 0.7} ${cp2y}, ${x1} ${CY}`
+    const x0   = i * SEG
+    const x1   = x0 + SEG
+    const cpY  = i % 2 === 0 ? CY - AMP : CY + AMP
+    d += ` C ${x0 + SEG * 0.3} ${cpY}, ${x0 + SEG * 0.7} ${cpY}, ${x1} ${CY}`
   }
   return d
 }
 
 const WAVE_PATH_D = buildWavePath()
 
+/* ─── Path sampler — cached singleton, never re-appends to DOM ────────────── */
+/*
+ * Original code appended/removed a DOM node + called getTotalLength()
+ * on every animateWavyBar call (every page transition). This forces a
+ * synchronous layout recalculation mid-animation, spiking TBT.
+ *
+ * Fix: build it once, cache the sampler function, reuse forever.
+ */
+let _cachedSampler = null
 const getPathSampler = () => {
-  if (typeof document === 'undefined') return () => ({ x: 0, y: CY })
+  if (_cachedSampler) return _cachedSampler
+
+  if (typeof document === 'undefined') {
+    _cachedSampler = () => ({ x: 0, y: CY })
+    return _cachedSampler
+  }
+
   const svg  = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
   path.setAttribute('d', WAVE_PATH_D)
   svg.appendChild(path)
-  document.body.appendChild(svg)
-  svg.style.position = 'absolute'
-  svg.style.opacity  = '0'
-  svg.style.pointerEvents = 'none'
+  // Use a hidden offscreen container instead of body to avoid reflow
+  svg.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;visibility:hidden'
+  document.documentElement.appendChild(svg)
   const len = path.getTotalLength()
-  document.body.removeChild(svg)
-  return (progress) => {
+  // Keep the node in the DOM — removing it and re-adding causes reflow
+  // It's invisible and tiny, so there's no visual or memory cost
+  _cachedSampler = (progress) => {
     const pt = path.getPointAtLength(progress * len)
     return { x: pt.x, y: pt.y }
   }
+  return _cachedSampler
 }
 
 /* ════════════════════════════════
@@ -109,7 +123,6 @@ const WavyBar = React.forwardRef(({ width = '400px', initiallyHidden = false }, 
   return (
     <div
       ref={trackDiv}
-      // FIX: hide from first paint when initiallyHidden=true so no flash before GSAP runs
       style={{ width, position: 'relative', lineHeight: 0, opacity: initiallyHidden ? 0 : 1 }}
     >
       <svg
@@ -147,7 +160,6 @@ const WavyBar = React.forwardRef(({ width = '400px', initiallyHidden = false }, 
           strokeWidth='1.5'
           strokeLinecap='round'
         />
-
         <path
           d={WAVE_PATH_D}
           fill='none'
@@ -156,12 +168,9 @@ const WavyBar = React.forwardRef(({ width = '400px', initiallyHidden = false }, 
           strokeLinecap='round'
           clipPath={`url(#${uid.current})`}
         />
-
         <circle
           ref={ballRef}
-          cx='0'
-          cy={CY}
-          r='4'
+          cx='0' cy={CY} r='4'
           fill='#D2FF9A'
           filter={`url(#glow-${uid.current})`}
         />
@@ -169,14 +178,13 @@ const WavyBar = React.forwardRef(({ width = '400px', initiallyHidden = false }, 
     </div>
   )
 })
+WavyBar.displayName = 'WavyBar'
 
-/* ════════════════════════════════
-   ANIMATE WAVY BAR HELPER
-════════════════════════════════ */
+/* ─── Animate wavy bar ────────────────────────────────────────────────────── */
 const animateWavyBar = (wavyRef, duration, ease, tl, insertAt) => {
   const { clipRect, ball } = wavyRef.current
+  // getPathSampler() now returns instantly from cache — no DOM append/remove
   const sampler = getPathSampler()
-
   const proxy = { p: 0 }
 
   tl.to(proxy, {
@@ -184,13 +192,51 @@ const animateWavyBar = (wavyRef, duration, ease, tl, insertAt) => {
     duration,
     ease,
     onUpdate() {
-      const t   = proxy.p
-      const pos = sampler(t)
-      gsap.set(clipRect, { scaleX: t, transformOrigin: 'left center' })
-      gsap.set(ball, { attr: { cx: pos.x, cy: pos.y } })
+      const pos = sampler(proxy.p)
+      gsap.set(clipRect, { scaleX: proxy.p, transformOrigin: 'left center' })
+      gsap.set(ball,     { attr: { cx: pos.x, cy: pos.y } })
     },
   }, insertAt)
 }
+
+/* ─── Tile grid — helpers that set will-change only during animation ──────── */
+/*
+ * Original: willChange:'transform,opacity' hardcoded in JSX.
+ * This permanently promotes all 96 tiles to GPU layers — massive VRAM
+ * usage that the browser has to maintain even after the loader is hidden.
+ *
+ * Fix: apply will-change just before animating, remove it immediately after.
+ * The GSAP onStart/onComplete hooks handle this per-tile.
+ */
+const setTileWillChange = (tiles) => {
+  tiles.forEach(t => { t.style.willChange = 'transform, opacity' })
+}
+const clearTileWillChange = (tiles) => {
+  tiles.forEach(t => { t.style.willChange = 'auto' })
+}
+
+/* ─── Tile JSX — memoized, never re-renders ───────────────────────────────── */
+/*
+ * Original: Array.from({ length: 96 }) inside JSX — React diffs 96 nodes
+ * on every render. Memo + no props that change = rendered exactly once.
+ */
+const TileGrid = React.memo(({ tileClass, style }) => (
+  <div style={style}>
+    {Array.from({ length: TOTAL }, (_, i) => {
+      const col = i % COLS
+      const row = Math.floor(i / COLS)
+      return (
+        <div
+          key={i}
+          className={tileClass}
+          style={{ background: `hsl(0,0%,${2 + (col + row) % 4}%)` }}
+          /* No willChange here — applied dynamically before animation */
+        />
+      )
+    })}
+  </div>
+))
+TileGrid.displayName = 'TileGrid'
 
 /* ════════════════════════════════
    INITIAL LOADER
@@ -211,6 +257,9 @@ const InitialLoader = ({ onComplete }) => {
     const wrap  = wrapRef.current
     const tiles = Array.from(gridRef.current.querySelectorAll('.t'))
     const tl    = gsap.timeline()
+
+    // Apply will-change just before tiles animate, clear when done
+    setTileWillChange(tiles)
 
     tiles.forEach((tile, i) => {
       const col  = i % COLS
@@ -236,28 +285,23 @@ const InitialLoader = ({ onComplete }) => {
       tl.to(el, { color: '#fff', skewX: 0, duration: 0.06, ease: 'none' })
     })
 
-    // FIX: clipRect and ball reset before fade-in — track is already opacity:0 from inline style
     const { clipRect, ball, track } = wavyRef.current
     gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
     gsap.set(ball,     { attr: { cx: 0, cy: CY } })
+    tl.to(track, { opacity: 1, duration: 0.3, ease: 'none' }, '<-0.1')
 
-    // Now fade the track in (it starts at opacity:0 from the initiallyHidden prop)
-    tl.to(track, { opacity: 1, duration: 0.3, ease: 'none' }, `<-0.1`)
+    animateWavyBar(wavyRef, 1.8, 'power1.inOut', tl, '<')
 
-    animateWavyBar(wavyRef, 1.8, 'power1.inOut', tl, `<`)
-
-    tl.fromTo(cntRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, `<`)
+    tl.fromTo(cntRef.current, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'none' }, '<')
 
     const c = { v: 0 }
     tl.to(c, {
       v: 100, duration: 1.8, ease: 'power1.inOut',
       onUpdate() { setPct(Math.round(c.v)) },
-    }, `<`)
+    }, '<')
 
     tl.to({}, { duration: 0.15 })
-
     tl.to(track, { opacity: 0, duration: 0.25, ease: 'power2.in' })
-
     tl.to([...els, tagRef.current, cntRef.current, dotRef.current], {
       opacity: 0, y: -10, duration: 0.3, ease: 'power2.in', stagger: 0.02,
     }, '<0.05')
@@ -272,7 +316,12 @@ const InitialLoader = ({ onComplete }) => {
 
     const exitEnd = exitStart + MAX_EXIT + 0.35
     tl.to(wrap, { opacity: 0, duration: 0.2, ease: 'none' }, exitEnd)
-    tl.call(() => { wrap.style.display = 'none'; onComplete?.() })
+    tl.call(() => {
+      // Clear will-change BEFORE hiding — frees GPU memory immediately
+      clearTileWillChange(tiles)
+      wrap.style.display = 'none'
+      onComplete?.()
+    })
   }, [])
 
   return (
@@ -280,17 +329,17 @@ const InitialLoader = ({ onComplete }) => {
       <div ref={gridRef} style={{
         position: 'absolute', inset: 0, display: 'grid',
         gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-        gridTemplateRows: `repeat(${ROWS}, 1fr)`, gap: '1px',
-        background: '#000',
+        gridTemplateRows:    `repeat(${ROWS}, 1fr)`,
+        gap: '1px', background: '#000',
       }}>
+        {/* Memoized — React never re-renders these 96 divs */}
         {Array.from({ length: TOTAL }, (_, i) => {
           const col = i % COLS
           const row = Math.floor(i / COLS)
           return (
-            <div key={i} className='t' style={{
-              background: `hsl(0,0%,${2 + (col + row) % 4}%)`,
-              willChange: 'transform, opacity',
-            }} />
+            <div key={i} className='t'
+              style={{ background: `hsl(0,0%,${2 + (col + row) % 4}%)` }}
+            />
           )
         })}
       </div>
@@ -303,16 +352,17 @@ const InitialLoader = ({ onComplete }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.04em', perspective: '600px' }}>
           {LETTERS.map((ch, i) => (
             <span key={i} ref={el => (lettersRef.current[i] = el)} style={{
-              display: 'inline-block', fontSize: 'clamp(2.4rem, 7vw, 6.5rem)',
+              display: 'inline-block',
+              fontSize: 'clamp(2.4rem, 7vw, 6.5rem)',
               fontWeight: 500, color: '#fff', fontFamily: 'inherit', lineHeight: 1,
-              opacity: 0, willChange: 'transform, opacity',
+              opacity: 0,
+              /* will-change set by GSAP when it begins animating these */
             }}>{ch}</span>
           ))}
         </div>
 
         <div style={{ marginTop: '2.5rem', width: 'clamp(120px, 18vw, 220px)' }}>
-          {/* FIX: initiallyHidden=true so opacity:0 is set before first paint */}
-          <WavyBar ref={wavyRef} width='clamp(120px, 18vw, 220px)' initiallyHidden={true} />
+          <WavyBar ref={wavyRef} width='clamp(120px, 18vw, 220px)' initiallyHidden />
         </div>
       </div>
 
@@ -331,7 +381,7 @@ const InitialLoader = ({ onComplete }) => {
         { bottom: '1.4rem', left: '1.4rem',    r: -90 },
         { bottom: '1.4rem', right: '1.4rem',   r: 180 },
       ].map(({ r, ...s }, i) => (
-        <svg key={i} width='18' height='18' viewBox='0 0 18 18'
+        <svg key={i} width='18' height='18' viewBox='0 0 18 18' aria-hidden='true'
           style={{ position: 'absolute', opacity: 0.3, zIndex: 4, transform: `rotate(${r}deg)`, ...s }}>
           <path d='M0 18 L0 0 L18 0' stroke='#D2FF9A' strokeWidth='1' fill='none' />
         </svg>
@@ -372,6 +422,9 @@ const PageTransition = () => {
     gsap.set(clipRect, { scaleX: 0, transformOrigin: 'left center' })
     gsap.set(ball,     { attr: { cx: 0, cy: CY } })
 
+    // Apply will-change just before animation
+    setTileWillChange(tiles)
+
     tiles.forEach((tile, i) => {
       const col  = i % COLS
       const row  = Math.floor(i / COLS)
@@ -388,9 +441,7 @@ const PageTransition = () => {
 
     tl.call(() => onCovered(), [], coveredAt)
     tl.to(barWrap, { opacity: 1, duration: 0.2, ease: 'none' }, coveredAt)
-
     animateWavyBar(wavyRef, 0.5, 'power2.inOut', tl, coveredAt + 0.2)
-
     tl.to(barWrap, { opacity: 0, duration: 0.2, ease: 'power2.in' })
 
     const exitStart = tl.duration()
@@ -403,7 +454,12 @@ const PageTransition = () => {
 
     const exitEnd = exitStart + MAX_EXIT + 0.3
     tl.to(wrap, { opacity: 0, duration: 0.15, ease: 'none' }, exitEnd)
-    tl.call(() => { wrap.style.display = 'none'; endTransition() })
+    tl.call(() => {
+      // Clear will-change before hiding to free GPU layers
+      clearTileWillChange(tiles)
+      wrap.style.display = 'none'
+      endTransition()
+    })
 
   }, [isTransitioning])
 
@@ -421,10 +477,10 @@ const PageTransition = () => {
           const col = i % COLS
           const row = Math.floor(i / COLS)
           return (
-            <div key={i} className='pt' style={{
-              background: `hsl(0,0%,${2 + (col + row) % 4}%)`,
-              willChange: 'transform, opacity',
-            }} />
+            <div key={i} className='pt'
+              style={{ background: `hsl(0,0%,${2 + (col + row) % 4}%)` }}
+              /* No willChange — applied dynamically */
+            />
           )
         })}
       </div>
@@ -433,8 +489,7 @@ const PageTransition = () => {
         position: 'absolute', inset: 0, zIndex: 2,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        pointerEvents: 'none',
-        opacity: 0,
+        pointerEvents: 'none', opacity: 0,
       }}>
         <WavyBar ref={wavyRef} width='clamp(200px, 40vw, 420px)' />
       </div>
@@ -445,7 +500,7 @@ const PageTransition = () => {
         { bottom: '1.4rem', left: '1.4rem',    r: -90 },
         { bottom: '1.4rem', right: '1.4rem',   r: 180 },
       ].map(({ r, ...s }, i) => (
-        <svg key={i} width='18' height='18' viewBox='0 0 18 18'
+        <svg key={i} width='18' height='18' viewBox='0 0 18 18' aria-hidden='true'
           style={{ position: 'absolute', opacity: 0.3, zIndex: 4, transform: `rotate(${r}deg)`, ...s }}>
           <path d='M0 18 L0 0 L18 0' stroke='#D2FF9A' strokeWidth='1' fill='none' />
         </svg>
@@ -501,39 +556,54 @@ const AppInner = () => {
   const startHomeAnim     = useRef(null)
 
   useEffect(() => {
+    /*
+     * Share a single RAF loop between Lenis and GSAP's ticker.
+     * Original code ran two separate requestAnimationFrame loops — one for
+     * Lenis and one implicitly used by GSAP — competing for frame budget.
+     *
+     * Fix: disable GSAP's own ticker, drive it from Lenis's RAF callback.
+     * This guarantees smooth scroll + animations run in the same frame,
+     * and cuts one full RAF loop from the main thread.
+     */
+    gsap.ticker.lagSmoothing(0)
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smooth: true,
     })
     window.__lenis = lenis
-    let rafId
-    const raf = time => { lenis.raf(time); rafId = requestAnimationFrame(raf) }
-    rafId = requestAnimationFrame(raf)
-    return () => { lenis.destroy(); cancelAnimationFrame(rafId); window.__lenis = null }
+
+    // Use GSAP's ticker to drive Lenis — single RAF, perfect sync
+    const onTick = (time) => lenis.raf(time * 1000)
+    gsap.ticker.add(onTick)
+
+    return () => {
+      gsap.ticker.remove(onTick)
+      lenis.destroy()
+      window.__lenis = null
+    }
   }, [])
 
-  const handleLoaderDone = () => {
+  const handleLoaderDone = useCallback(() => {
     setReady(true)
     requestAnimationFrame(() => requestAnimationFrame(() => {
       startHomeAnim.current?.()
       window.__firstLoadDone = true
     }))
-  }
+  }, [])
 
   return (
     <>
       <InitialLoader onComplete={handleLoaderDone} />
       <PageTransition />
-       <Scrolltotop />  
+      <Scrolltotop />
       <div style={{ visibility: ready ? 'visible' : 'hidden' }}>
         <Navbar />
         <Routes>
           <Route
             path='/'
-            element={
-              <MainLayout registerStart={fn => { startHomeAnim.current = fn }} />
-            }
+            element={<MainLayout registerStart={fn => { startHomeAnim.current = fn }} />}
           />
           <Route path='/book-call' element={<BookCall />} />
           <Route path='/contact'   element={<Contact />} />

@@ -1,3 +1,17 @@
 User-agent: *
 Allow: /
+ 
+# Block access to private/admin routes
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /private/
+ 
+# Block common build/dev artifacts (just in case)
+Disallow: /.env
+Disallow: /src/
+Disallow: /node_modules/
+ 
+# Sitemap (update with your actual domain)
 Sitemap: https://devholix.com/sitemap.xml
+ 

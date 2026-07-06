@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const lines = [
-  { label: "WHO", text: "Devholix is led by Abdullah Farooq — a web developer focused on quality over quantity. We work with a small number of clients at a time so every project gets the attention it deserves." },
-  { label: "WHAT", text: "We build complete websites from scratch — design, development, performance, and deployment. No templates, no outsourcing, no shortcuts. Just clean work delivered on time." },
-  { label: "HOW", text: "Every project follows a clear process — discovery, design approval, build, then launch. You always know where we are. No surprises, no delays, no chasing us for updates." },
-  { label: "WHY", text: "Most business websites look fine but do nothing. They don't convert, and they don't represent the quality of the business behind them. We build websites that actually work." },
-];
+  { label: "WHO", text: "Devholix is led by Abdullah Farooq, founder and lead developer. We're not an agency with 50 people and 5 account managers. We're a focused team that takes on a limited number of projects — so every client gets full attention, direct communication, and work that's actually cared about." },
+  { label: "WHAT", text: "We build complete websites from scratch — design, development, performance, and deployment. No templates, no outsourced work, no copy-paste layouts. Every project is built specifically for your business, your audience, and your goals." },
+  { label: "HOW", text: "Every project follows a clear four-step process — discovery, design approval, build, then launch. You get regular updates, direct access to the person building your site, and a full handoff at the end. No surprises. No delays. No chasing us for updates." },
+  { label: "WHY", text: "Most businesses are paying for websites that look fine but do nothing. They don't convert visitors, they don't rank, they load slowly, and they don't represent the actual quality of the business. We started Devholix to fix that — to build websites that work as hard as the businesses behind them." },
+]
 const HEADING = ["BUILT TO", "OUTLAST", "THE NOISE."];
 
 const useReveal = (threshold = 0.1) => {
