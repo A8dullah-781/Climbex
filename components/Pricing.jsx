@@ -87,15 +87,15 @@ const Pricing = () => {
   const handleBookCall = () => go('/book-call')
 
   const features1 = [
-    'Launched in 10–14 days',
-    'Sharp design that actually converts',
-    "Lighthouse 90+ performance",
-    'Fully responsive on all devices',
+    'Live results in 30–45 days',
+    'Strategy built around your market',
+    "Full technical & on-page audit",
+    'Transparent monthly reporting',
   ]
   const features2 = [
-    'Built from scratch, nothing recycled',
-    'Custom design system for your brand',
-    'Performance built to scale',
+    'Built from scratch, nothing templated',
+    'Custom strategy for your industry',
+    'Link building & authority growth',
     'Ongoing support available',
   ]
 
@@ -124,7 +124,7 @@ const Pricing = () => {
               Launch Pad
             </h3>
             <p className="txtgray robo mt-1" style={{ fontSize: 'clamp(0.72rem, 1vw, 0.9rem)' }}>
-              Everything you need to launch
+              Everything you need to start ranking
             </p>
             <p className="txtwhite fontone font-black mt-6 leading-none"
               style={{ fontSize: 'clamp(2rem, 3.2vw, 3rem)' }}>
@@ -162,7 +162,7 @@ const Pricing = () => {
               Elite Build
             </h3>
             <p className="text-[#3a3a3a] robo mt-1" style={{ fontSize: 'clamp(0.72rem, 1vw, 0.9rem)' }}>
-              High-end builds for high-value businesses
+              Full-scale SEO for high-value businesses
             </p>
             <p className="text-[#1a1a1a] fontone font-black mt-6 leading-none"
               style={{ fontSize: 'clamp(2rem, 3.2vw, 3rem)' }}>
@@ -179,9 +179,9 @@ const Pricing = () => {
             </ul>
           </div>
 
-          {/* Book a Free Call → /book-call (unchanged) */}
-          <MagneticBtn onClick={handleBookCall} className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
-            Book a Free Call
+          {/* Let's Start → /book-call (unchanged) */}
+          <MagneticBtn onClick={handleLaunchNow} className="bg-[#3D6500] text-[#B8FF4F] hover:bg-[#0f0f0f]">
+            Let's Start
           </MagneticBtn>
         </div>
 

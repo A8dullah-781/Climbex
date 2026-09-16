@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const lines = [
-  { label: "WHO", text: "Devholix is led by Abdullah Farooq, founder and lead developer. We're not an agency with 50 people and 5 account managers. We're a focused team that takes on a limited number of projects — so every client gets full attention, direct communication, and work that's actually cared about." },
-  { label: "WHAT", text: "We build complete websites from scratch — design, development, performance, and deployment. No templates, no outsourced work, no copy-paste layouts. Every project is built specifically for your business, your audience, and your goals." },
-  { label: "HOW", text: "Every project follows a clear four-step process — discovery, design approval, build, then launch. You get regular updates, direct access to the person building your site, and a full handoff at the end. No surprises. No delays. No chasing us for updates." },
-  { label: "WHY", text: "Most businesses are paying for websites that look fine but do nothing. They don't convert visitors, they don't rank, they load slowly, and they don't represent the actual quality of the business. We started Devholix to fix that — to build websites that work as hard as the businesses behind them." },
+  { label: "WHO", text: "We're not an agency with 50 people and 5 account managers. We're a focused team that takes on a limited number of clients — so every account gets full attention, direct communication, and strategy that's actually cared about." },
+  { label: "WHAT", text: "We build complete SEO strategies from the ground up — technical audits, on-page optimization, content, and link building. No cookie-cutter packages, no outsourced work, no generic reports. Every strategy is built specifically for your business, your market, and your goals." },
+  { label: "HOW", text: "Every project follows a clear four-step process — audit, strategy, execution, then reporting. You get regular updates, direct access to the person working on your account, and full transparency on what's being done and why. No surprises. No delays. No chasing us for updates." },
+  { label: "WHY", text: "Most businesses are paying for SEO that looks fine on a report but does nothing. Rankings don't move, traffic doesn't convert, and no one can explain what's actually being done. We started this to fix that — to run SEO that works as hard as the businesses behind it." },
 ]
-const HEADING = ["BUILT TO", "OUTLAST", "THE NOISE."];
+const HEADING = ["BUILT TO", "OUTLAST THE ", "COMPETITION."];
 
 const useReveal = (threshold = 0.1) => {
   const ref = useRef(null);
@@ -61,7 +61,7 @@ const About = () => {
         <div>
           <p className="robo text-[#9592FF] text-[0.65rem] lg:text-[0.7rem] tracking-[0.25em] uppercase mb-4 lg:mb-5"
             style={{ transition: "opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1)", opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(22px)" }}>
-            About — Devholix
+            About — CLIMBEX
           </p>
 
           <h2 className="fontone" style={{ fontWeight: 900, fontSize: "clamp(32px,7vw,80px)", color: "#fff", letterSpacing: "-0.02em", lineHeight: 1, margin: 0 }}>
@@ -82,7 +82,7 @@ const About = () => {
 
         <p className="robo font-light italic text-white/35 lg:max-w-[260px] leading-[1.7] lg:text-right text-[clamp(0.85rem,1.1vw,1rem)]"
           style={{ transition: "opacity .75s ease 360ms, transform .75s cubic-bezier(.16,1,.3,1) 360ms", opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(22px)" }}>
-          We don't chase attention.<br />We engineer it.<br />Every detail built to dominate.
+          We don't chase rankings.<br />We engineer them.<br />Every strategy built to dominate search.
         </p>
       </div>
 

@@ -86,7 +86,7 @@ const Service = () => {
             CORE SERVICES
           </div>
           <div className="s-sub robo txtgray text-[clamp(0.7rem,1.2vw,1rem)] sm:w-[40vw] sm:text-right leading-relaxed">
-            We don't just build sites. We build digital assets that work hard for your business 24/7.
+            We don't just run campaigns. We build search visibility that works hard for your business 24/7.
           </div>
         </div>
       </div>
@@ -117,15 +117,15 @@ const Service = () => {
                 <img src="/images/uiux.webp" alt="UI/UX" className="w-[clamp(28px,2.8vw,42px)]" />
               </div>
               <div className="txtgray robo text-[clamp(10px,1vw,12px)] tracking-widest">
-                01/ DESIGN
+                01
               </div>
             </div>
             <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] txtwhite font-semibold">
-              UI/UX Design
+              Local SEO
             </div>
           </div>
           <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed mt-4">
-            Clean, premium design that guides your visitors exactly where you want them to go.
+           Dominate map rankings and local search, Google Business Profile, citations, and reviews that turn nearby searches into customers.
           </div>
         </div>
 
@@ -152,17 +152,15 @@ const Service = () => {
                 <img src="/images/dev.webp" alt="Dev" className="w-[clamp(28px,2.8vw,42px)]" />
               </div>
               <div className="txtgray robo text-[clamp(10px,1vw,12px)] tracking-widest">
-                02/ CODE
+                02
               </div>
             </div>
             <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] txtwhite font-semibold">
-              Development
+              Technical SEO
             </div>
           </div>
           <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed mt-4">
-            Cutting-edge digital solutions built for speed, scale, and
-            precision. Engineered to deliver complete control and seamless
-            performance.
+            The foundation that makes everything else work. Site speed, crawlability, and indexing fixed so search engines can actually find and rank you.
           </div>
         </div>
       </div>
@@ -191,11 +189,11 @@ const Service = () => {
             <img src="/images/performance.webp" alt="Performance" className="w-[clamp(28px,2.8vw,42px)]" />
           </div>
           <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] mt-3 sm:mt-4 txtwhite font-semibold">
-            Performance
+            Link Building & Authority
           </div>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-3 mt-2">
             <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed sm:max-w-[45%]">
-             Every site we ship scores 90+ on Lighthouse. Speed isn't optional, it's the standard.
+             High-quality backlinks and digital PR that build real domain authority, not spammy links that get you penalized.
             </div>
             <div className="s-img">
               <img
@@ -228,10 +226,10 @@ const Service = () => {
             <img src="/images/deploy.webp" alt="Deploy" className="w-[clamp(28px,2.8vw,42px)]" />
           </div>
           <div className="fontone text-[clamp(1.1rem,2vw,1.7rem)] txtwhite font-semibold">
-            Deployment
+            On-Page & Content
           </div>
           <div className="robo txtgray text-[clamp(0.68rem,1vw,0.85rem)] leading-relaxed mt-2">
-            We handle hosting setup, domain, and go-live. You don't touch a thing.
+            Keyword-optimized content and metadata that targets what your customers are actually searching for, and gets you ranking for it.
           </div>
         </div>
       </div>

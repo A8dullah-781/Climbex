@@ -140,7 +140,7 @@ const Home = ({ registerStart }) => {
 
           <div ref={tagRef} className='robo text-[3vw] sm:text-[2vw] md:text-[1.2vw] lg:text-[1vw] flex flex-row justify-center items-center gap-2 sm:gap-5 flex-wrap mb-5 lg:mb-0'>
             <div data-hover className='txtgreen bg-[#D2FF9A]/10 py-1 px-4 rounded-3xl border border-[#D2FF9A]/20 cursor-default'>
-              V1.0 // WEB AGENCY 
+              V1.0 // MARKETING AGENCY 
             </div>
             <div className='txtdgray hidden sm:block'>---------</div>
             <div className='txtblue tracking-[0.1em]'>EST . 2026</div>
@@ -151,13 +151,13 @@ const Home = ({ registerStart }) => {
             className='font-black fontone text-[18vw] sm:text-[15vw] md:text-[13vw] leading-none tracking-tighter txtwhite text-center select-none'
             style={{ perspective: '800px' }}
           >
-            DEVHOLIX
+            CLIMBEX
           </div>
 
           <div ref={descRef} className='txtgray text-[3.5vw] sm:text-[2vw] md:text-[1.4vw] lg:text-[1.2vw] text-center py-4 px-4'>
-            We build fast, high-end websites for UK and US businesses {' '}
+          We help UK and US businesses rank higher, get found, and grow {' '}
             <br className='hidden md:block' />
-           that want to look as good as they actually are.
+           through SEO that actually moves the needle, not just reports.
           </div>
 
           <div ref={btnsRowRef} className='flex justify-center items-center gap-4 sm:gap-8 py-4 robo flex-wrap'>
@@ -168,7 +168,7 @@ const Home = ({ registerStart }) => {
               className='text-[3vw] sm:text-[1.8vw] md:text-[1.2vw] lg:text-[1vw] px-6 sm:px-8 py-3 sm:py-4 bg-[#D2FF9A] rounded-full font-bold cursor-pointer will-change-transform'
               style={{ color: '#000' }}
             >
-              EXPLORE PROJECTS
+              EXPLORE WORK
             </div>
             <div
               ref={secondaryBtnRef}

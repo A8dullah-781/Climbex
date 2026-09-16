@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 const steps = [
   {
     num: "01",
-    name: "Discovery",
-    desc: "We start by understanding your business, your clients, and what your website needs to do. No assumptions, just the right questions. Goals / Audience / Scope",
+    name: "Audit",
+    desc: "We start by understanding your business, your market, and where you're losing visibility. No assumptions, just the right questions. Goals / Competitors / Scope",
     tags: [
       { label: "Analysis", color: "acc" },
       { label: "Mapping" },
@@ -13,30 +13,30 @@ const steps = [
   },
   {
     num: "02",
-    name: "Design",
-    desc: "We design the full layout and visual system before writing a single line of code. You see it, approve it, then we build it. Wireframes / UI Design / Approval",
+    name: "Strategy",
+    desc: "We map out the full SEO roadmap before touching anything live. You see it, approve it, then we execute. Keyword Strategy / Content Plan / Approval",
     tags: [
-      { label: "Wireframes" },
-      { label: "UI Filing", color: "bl" },
-      { label: "System" },
+      { label: "Research" },
+      { label: "Prioritization", color: "bl" },
+      { label: "Sign-off" },
     ],
   },
   {
     num: "03",
-    name: "Build",
-    desc: "Clean, fast, production-ready code. Built with React, tested across all devices, optimized for performance from day one. Development / Testing / Optimization",
+    name: "Execution",
+    desc: "Technical fixes, content, and link building — done right, tracked from day one. Built for rankings, tested against real search data. Implementation / Testing / Optimization",
     tags: [
-      { label: "Coding", color: "acc" },
-      { label: "Testing" },
+      { label: "Execution", color: "acc" },
+      { label: "Monitoring" },
       { label: "Refinement" },
     ],
   },
   {
     num: "04",
-    name: "Launch",
-    desc: "We handle deployment, final checks, and go-live. After launch, you get a full handoff so you're never dependent on us to make basic updates. Deployment / Handoff / Support",
+    name: "Report & Grow",
+    desc: "We handle ongoing tracking, reporting, and iteration. After the first results land, you get full visibility so you're never guessing what's working. Reporting / Handoff / Ongoing Growth",
     tags: [
-      { label: "Launch" },
+      { label: "Reporting" },
       { label: "Scale", color: "bl" },
       { label: "Optimization", color: "acc" },
     ],

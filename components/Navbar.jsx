@@ -5,7 +5,7 @@ import { usePageNavigate } from '../src/hooks/usePageNavigate'
 
 const links = [
   { label: 'Home',     id: 'home'    },
-  { label: 'Projects', id: 'archive' },
+  { label: 'Work', id: 'archive' },
   { label: 'Services', id: 'service' },
   { label: 'About',    id: 'about'   },
   { label: 'Contact',  id: 'contact', page: '/contact' }, // ← has a page route
@@ -118,9 +118,8 @@ const Navbar = () => {
         onClick={() => handleNavLink({ label: 'Home', id: 'home' })}
         className='fontone font-bold text-white text-[5vw] pr-4 lg:pr-0 lg:text-[1.3vw] cursor-pointer select-none'
       >
-        Devholix
-        <span className='inline-block w-[6px] h-[6px] bg-[#D2FF9A] rounded-full ml-[2px] mb-[2px] align-middle animate-pulse' />
-      </div>
+        CLIMBEX
+        </div>
 
       {/* Desktop links */}
       <div className='hidden md:flex flex-row gap-10 robo uppercase text-[1vw]'>
@@ -146,7 +145,7 @@ const Navbar = () => {
         onClick={handleStartProject}
         className='hidden md:block robo text-black text-[1vw] bgwhite rounded-3xl px-5 py-1 cursor-pointer relative overflow-hidden group'
       >
-        <span className='relative z-10 transition-colors duration-300 mt-0.5 group-hover:text-black'>START PROJECT</span>
+        <span className='relative z-10 transition-colors duration-300 mt-0.5 group-hover:text-black'>GET A FREE AUDIT</span>
         <span className='absolute inset-0 bg-[#D2FF9A] -translate-x-full transition-transform duration-300 ease-out group-hover:translate-x-0 rounded-3xl' />
       </div>
 

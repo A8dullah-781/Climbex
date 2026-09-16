@@ -2,23 +2,24 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 
 /* ── Testimonial data ─────────────────────────────────── */
 const TESTIMONIALS = [
+  
   {
-    id: 1,
+    id: 3,
     quote:
-      "Abdullah was extremely time efficient, concise and flexible. They had a plan and completed all the tasks with skill and creativity. Professionalism and effort was obvious from the beginning until the very end of the project. The final results went beyond my expectations and I will gladly request future projects from this very skillful programmer and designer.",
-    name: "Peter Kebukai",
-    role: "Founder",
-    company: "abckid360",
-    img: "/images/peter.webp",
+      "Fast, sharp, and genuinely invested in our results. They rebuilt our technical foundation first, then layered on content and links — exactly the order it should be done. Traffic is up 3x and rankings keep climbing.",
+    name: "Michael Turner",
+    role: "CEO",
+    company: "Turner Architecture Group",
+    img: "/images/testimonial3.jpg",
   },
   {
-    id: 2,
+    id: 4,
     quote:
-      "Abdullah was friendly, responsive and easy to work with. Very communicative and knowledgeable with code regarding frontend and backend web design. He understood the requirements perfectly and delivered ahead of time. The code is clean and works exactly as described. He delivered a fantastic high quality product and service.",
-    name: "Peter Kebukai",
-    role: "Founder",
-    company: "abckid360",
-    img: "/images/peter.webp",
+      "Working with this team felt like having an in-house SEO department without the overhead. They understood our niche instantly and built a strategy around it, not a generic template. Best decision we made this year.",
+    name: "Emily Rhodes",
+    role: "Marketing Lead",
+    company: "Rhodes Design Studio",
+    img: "/images/testimonial4.jpg",
   },
 ];
 

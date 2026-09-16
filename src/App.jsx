@@ -19,7 +19,6 @@ import Contact     from '../components/Contact'
 import Footer      from '../components/Footer'
 import Work        from '../components/Work'
 import Archive     from '../components/Archive'
-import BookCall    from '../components/BookCall'
 
 gsap.registerPlugin(CustomEase)
 CustomEase.create('tile.drop', '0.55, 0, 1, 0.45')
@@ -251,7 +250,7 @@ const InitialLoader = ({ onComplete }) => {
   const wavyRef    = useRef(null)
   const [pct, setPct] = useState(0)
 
-  const LETTERS = ['D','E','V','H','O','L','I','X']
+  const LETTERS = ['C','L','I','M','B','E','X']
 
   useEffect(() => {
     const wrap  = wrapRef.current
@@ -605,7 +604,6 @@ const AppInner = () => {
             path='/'
             element={<MainLayout registerStart={fn => { startHomeAnim.current = fn }} />}
           />
-          <Route path='/book-call' element={<BookCall />} />
           <Route path='/contact'   element={<Contact />} />
         </Routes>
         <Footer />

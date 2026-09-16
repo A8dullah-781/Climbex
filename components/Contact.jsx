@@ -87,21 +87,21 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    emailjs
-      .sendForm(
-        "service_049904t",
-        "template_2945nga",
-        formRef.current,
-        "M57wvTXlNURFmUFXx"
-      )
-      .then(() => {
-        setSubmitted(true)
-        setFormData({ name: '', email: '', subject: '', message: '' })
-        setTimeout(() => setSubmitted(false), 10000)
-      })
-      .catch((err) => {
-        console.error("EmailJS error:", err)
-      })
+    // emailjs
+      // .sendForm(
+      //   "service_049904t",
+      //   "template_2945nga",
+      //   formRef.current,
+      //   "M57wvTXlNURFmUFXx"
+      // )
+      // .then(() => {
+      //   setSubmitted(true)
+      //   setFormData({ name: '', email: '', subject: '', message: '' })
+      //   setTimeout(() => setSubmitted(false), 10000)
+      // })
+      // .catch((err) => {
+      //   console.error("EmailJS error:", err)
+      // })
   }
 
   const inputBase = "robo bg-[#161616] border-b border-[#2a2a2a] text-white text-sm placeholder-gray-600 px-2 py-3 focus:outline-none w-full transition-colors duration-300"
@@ -157,10 +157,9 @@ const Contact = () => {
 
           <div className="flex flex-col gap-4">
             <ContactRow
-              href="mailto:abdullah@devholix.com"
               inView={leftInView}
               delay={0.6}
-              text="ABDULLAH@DEVHOLIX.COM"
+              text="INFO@CLIMBEX.EX"
               icon={
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-gray-400 group-hover:text-[#B8FF4F] transition-colors duration-300">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>

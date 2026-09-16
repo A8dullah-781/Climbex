@@ -3,44 +3,44 @@ import { usePageNavigate } from '../src/hooks/usePageNavigate'
 
 const faqs = [
   {
-    q: "What's the average build time?",
-    a: "Most projects ship in 2–4 weeks depending on scope. Launch Pad projects typically deliver in 10–14 days. Elite Builds with custom functionality may take 3–6 weeks. You'll always get a clear timeline before we start — no guessing."
+    q: "How long until I see results?",
+    a: "Most clients see measurable movement in rankings within 30–60 days, with significant traffic growth by month 3–4. SEO is a compounding process — we'll always give you a realistic timeline based on your niche and competition, not inflated promises."
   },
   {
     q: "How do I get started?",
-    a: "Book a free discovery call. We'll understand your goals, walk you through the process, and recommend the right engagement. No sales pressure — just an honest conversation about whether we're the right fit."
+    a: "Book a free strategy call. We'll audit your current visibility, understand your goals, and recommend the right engagement. No sales pressure — just an honest conversation about whether we're the right fit."
   },
   {
-    q: "What makes Devholix different from other agencies?",
-    a: "We don't use templates, generic layouts, or recycled code. Every project is engineered from scratch with a focus on speed, design quality, and conversion. We treat your business like it's our own — and the work reflects that."
+    q: "What makes you different from other SEO agencies?",
+    a: "We don't use cookie-cutter packages or outsourced link farms. Every strategy is built specifically around your market, your competitors, and your goals. We treat your rankings like our own — and the work reflects that."
   },
   {
     q: "Do you work with startups or only established businesses?",
-    a: "Both. Our Launch Pad plan is built for founders and early-stage startups who need to move fast. Our Elite Build is for established businesses that need a premium digital presence. We meet you where you are."
+    a: "Both. Our Launch Pad plan is built for founders and early-stage businesses who need to build visibility fast. Our Elite Build is for established businesses that need aggressive, ongoing growth. We meet you where you are."
   },
   {
-    q: "I already have a website — can you just redesign it?",
-    a: "That's one of our most common engagements. We audit your existing site, identify what's costing you conversions, and rebuild it with precision. Old brand, new performance."
+    q: "My site already ranks for some things — can you just improve it?",
+    a: "That's one of our most common engagements. We audit your existing rankings, identify what's holding you back, and build on what's already working. No starting from zero."
   },
   {
-    q: "Will my website be mobile responsive?",
-    a: "100%. Everything we build is fully responsive across all devices and screen sizes. We test on mobile, tablet, and desktop before any delivery — it's non-negotiable."
+    q: "Will this work for local search too?",
+    a: "Yes. Every engagement includes Local SEO — Google Business Profile optimization, citations, and map rankings — alongside broader organic strategy. We build visibility everywhere your customers are searching."
   },
   {
-    q: "Do you handle SEO and performance optimization?",
-    a: "Yes. Every project ships with clean semantic HTML, optimized assets, fast load times, and proper meta structure. For deeper SEO strategy and content, we offer that as an add-on."
+    q: "Do you handle technical SEO and site performance?",
+    a: "Yes. Every project starts with a full technical audit — site speed, crawlability, indexing, Core Web Vitals. Technical fixes come first, because content and links can't work on a broken foundation."
   },
   {
-    q: "Can I see examples of your previous work?",
-    a: "Absolutely. We have a curated portfolio of live projects across industries. Book a call and we'll walk you through case studies relevant to your niche so you can see exactly what to expect."
+    q: "Can I see examples of your previous results?",
+    a: "Absolutely. We have case studies across industries showing real ranking and traffic growth. Book a call and we'll walk you through results relevant to your niche so you can see exactly what to expect."
   },
   {
-    q: "Do you offer post-launch maintenance?",
-    a: "Yes. We offer ongoing retainer packages for clients who need continuous updates, performance monitoring, and feature additions. Think of us as your long-term engineering partner, not a one-time vendor."
+    q: "Is this a one-time project or ongoing?",
+    a: "SEO is ongoing by nature — search engines and competitors don't stand still. We offer retainer packages for continuous optimization, content, and link building. Think of us as your long-term growth partner, not a one-time vendor."
   },
   {
     q: "How much input do I have during the process?",
-    a: "A lot. We run collaborative checkpoints at design, development, and pre-launch stages. You'll always know exactly where we are and have the chance to give feedback — you're never in the dark."
+    a: "A lot. We run monthly reporting checkpoints and stay in direct contact throughout. You'll always know exactly what's being done and why — you're never in the dark."
   },
 ]
 
@@ -216,7 +216,7 @@ const Faqs = () => {
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
-  const handleBookCall = () => go('/book-call')
+  const handleBookCall = () => go('/contact')
 
   return (
     <div className="w-full py-16 md:py-24 flex flex-col items-center">
@@ -250,7 +250,7 @@ const Faqs = () => {
             transition: 'opacity 0.6s ease 0.35s, transform 0.6s cubic-bezier(0.23,1,0.32,1) 0.35s',
           }}
         >
-          Everything you need to know before we build something great together.
+          Everything you need to know before we get started.
         </p>
       </div>
 
@@ -287,10 +287,10 @@ const Faqs = () => {
             Still have questions?
           </p>
           <h3 className="text-[#0f0f0f] fontone font-black uppercase text-2xl sm:text-3xl leading-tight">
-           Ready to build something that actually works?
+          Ready to start ranking higher?
           </h3>
           <p className="text-[#3a3a3a] robo text-xs sm:text-sm mt-2 max-w-xs leading-relaxed">
-            No pitch. No pressure. Just a real conversation about your project.
+           No pitch. No pressure. Just a real conversation about your growth.
           </p>
         </div>
 
@@ -306,7 +306,7 @@ const Faqs = () => {
             onClick={handleBookCall}
             className="bg-[#0f0f0f] text-[#B8FF4F] fontone font-black uppercase tracking-widest text-xs sm:text-sm px-8 sm:px-10 py-4 rounded-full hover:bg-[#1a1a1a] w-full sm:w-auto whitespace-nowrap"
           >
-            Book a Free Call
+            Let's Get Started
           </MagneticButton>
         </div>
       </div>

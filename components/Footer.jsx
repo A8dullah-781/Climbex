@@ -57,14 +57,12 @@ const Footer = () => {
   const links = [
     {
       label: 'LINKEDIN',
-      href: 'https://www.linkedin.com/in/abdullah-farooq-devholix',
       icon: <FaLinkedinIn size={16} />,
       hoverColor: '#0A66C2',
       glowColor: 'rgba(10,102,194,0.5)',
     },
     {
-      label: 'ABDULLAH@DEVHOLIX.COM',
-      href: 'mailto:abdullah@devholix.com',
+      label: 'INFO@CLIMBEX.EX',
       icon: (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
           <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -76,7 +74,6 @@ const Footer = () => {
     },
     {
       label: 'WHATSAPP',
-      href: 'https://wa.me/923271563383?text=I%E2%80%99m%20looking%20to%20build%20a%20high-impact%20digital%20presence.%20Let%E2%80%99s%20schedule%20a%20call%20and%20move%20forward%20with%20clarity.',
       icon: <FaWhatsapp size={16} />,
       hoverColor: '#25D366',
       glowColor: 'rgba(37,211,102,0.5)',
@@ -105,7 +102,7 @@ const Footer = () => {
             perspective: '800px',
           }}
         >
-          DEVHOLIX
+          CLIMBEX
         </h1>
       </div>
 
@@ -158,7 +155,7 @@ const Footer = () => {
         <div className="flex flex-col items-start sm:items-end gap-1">
           <span className="robo txtgray text-[10px] tracking-widest">VER_STABLE_001</span>
           <span className="robo txtgray text-[10px] tracking-widest">
-            ©2026 DEVHOLIX. ALL RIGHTS RESERVED.
+            ©2026 CLIMBEX. ALL RIGHTS RESERVED.
           </span>
         </div>
       </div>
